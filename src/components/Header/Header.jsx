@@ -1,16 +1,29 @@
+import { postTask } from "../api";
 import "./Header.css";
+import {useState } from "react";
+
 export default function Header() {
-  function handleClick() {
-    console.log('dsdsad')
+  const [taskTitle, setTaskTitle] = useState('');
+  async function handleSubmit() {
+    // event.preventDefault();
+    const addTask = await postTask({
+        title:taskTitle,
+        isDone:true
+    })
   }
-    return (
+
+  return (
     <header>
-        <form action="" onSubmit={1}>
-          <label htmlFor="task"></label>
-          <input onChange={1} type="text" name='task' id='task' placeholder="Task To Be Done..."/>
-          <button className="header__button" onClick={handleClick}>Add</button>
-        </form>
+      <form onSubmit={handleSubmit}>
+        <input 
+          onChange={(event) => setTaskTitle(event.target.value)} 
+          type="text" 
+          name='task' 
+          id='task' 
+          placeholder="Task To Be Done..."
+        />
+        <button className="header__button">Add</button>
+      </form>
     </header>
   );
 }
- 
