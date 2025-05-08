@@ -1,33 +1,71 @@
 import "./Tasks.css";
-import { getTasks } from "../api";
-import { useEffect, useState } from "react";
+import { deleteTask, editingTask} from "../api";
+import { useState } from "react";
 
-export default function Tasks() {
-  // const [userTask, setUserTask] = useState();
-  const [task, setTask] = useState([])
-  useEffect (() => {
-    (async() => 
-    {const tasks = await getTasks();
-      setTask(tasks.data);
-    })();
-  }, []);
+export default function Tasks({task, receivingCards}) {
+  
+  const [taskTitle, setTaskTitle] = useState();
+  const [taskId, setTaskId] = useState('');
+
+
+  async function handleDelete(id) {
+    await deleteTask(id);
+    await receivingCards();
+  }
+
+  async function handleSaveEdit(id) {
+    
+    await editingTask(id, {
+      title: taskTitle,
+      isDone: false
+    });
+    await receivingCards();
+    setTaskId('');
+    setTaskTitle(undefined);
+    
+  }
+
+  function handleBack() {
+    setTaskId('');
+    setTaskTitle()
+  }
 
   return (
     <ul className="tasks">
-      {task.map(elem => (
+      {task.slice().reverse().map(elem => (
       <li className="task" key={elem.id}>
         <div className="task__possition alignment">
-          <label htmlFor="complitionTask"></label>
           <input
             className="checkbox-round"
             type="checkbox"
             name="complitionTask"
           />
-          <p className="task__title">{elem.title}</p>
+        </div>
+        <div className="possition__title">
+          <input className="task__title" 
+            type="text" 
+            name='task'
+            id='task'
+            onChange={(event) => setTaskTitle(event.target.value)}
+            {...(taskId === elem.id ? {value:taskTitle || elem.title} : {value:elem.title})} 
+            minLength='2'
+            maxLength='64'
+            required
+            {...(taskId === elem.id ? {disabled:false} : {disabled:true})}
+          />
         </div>
         <div className="task__possition">
-          <button className="button task__rename"><img className='rename__img' src="src/assets/rename.png"/></button>
-          <button className="button task__delete"><img className='img' src="src/assets/delete.svg"/></button>
+          {taskId === elem.id ?
+          <>
+            <button className="button button__save" onClick={() => handleSaveEdit(elem.id)}>Save</button>
+            <button className="button button__back" onClick={handleBack}>Back</button>
+          </> 
+          : <button className="button button__rename" onClick={() => setTaskId(elem.id)}>
+              <img className='rename__img' src="src/assets/rename.png"/>
+            </button>}
+          <button className="button button__delete" onClick={() => handleDelete(elem.id)}>
+            <img className='img' src="src/assets/delete.svg"/>
+          </button>
         </div>
       </li>))}
     </ul>

@@ -40,21 +40,32 @@ const config = {
     } 
   }
 
-
-
-  
   export async function deleteTask(id) {
     try {
-        const res = await fetch(`${config.baseUrl}//todos/${id}`, {
+            await fetch(`${config.baseUrl}//todos/${id}`, {
             headers:config.headers,
             method:'DELETE',
         })
-        return await handleResponse(res);
-    }catch(error) {
-        console.error('Ошибка', error.message)
-    }
 
-  } 
+    }catch(error) {
+        console.error('Ошибка:', error.message)
+    } 
+  }
+
+  export async function  editingTask(id, taskData) {
+    try {
+        const res = await fetch(`${config.baseUrl}//todos/${id}`, {
+            headers:config.headers,
+            method:"PUT",
+            body: JSON.stringify({
+                title:taskData.title,
+                isDone:taskData.isDone
+            })
+        })
+        return await handleResponse(res);
+    } catch(error) {console.error('Ошибка', error.message)}
+    
+  }
 const q = await getTasks()
 console.log(q)
  
