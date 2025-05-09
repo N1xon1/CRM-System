@@ -8,7 +8,6 @@ export default function Header({receivingCards}) {
       event.preventDefault();
       await postTask({
         title:taskTitle,
-        isDone:false
     })
     setTaskTitle('');
     receivingCards();

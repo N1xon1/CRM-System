@@ -52,7 +52,7 @@ const config = {
     } 
   }
 
-  export async function  editingTask(id, taskData) {
+  export async function editingTask(id, taskData) {
     try {
         const res = await fetch(`${config.baseUrl}//todos/${id}`, {
             headers:config.headers,
@@ -66,6 +66,7 @@ const config = {
     } catch(error) {console.error('Ошибка', error.message)}
     
   }
+
 const q = await getTasks()
 console.log(q)
  
