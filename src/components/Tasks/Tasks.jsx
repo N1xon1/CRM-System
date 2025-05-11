@@ -1,6 +1,8 @@
 import "./Tasks.css";
 import { deleteTask, editingTask} from "../api";
 import { useState } from "react";
+import deleteIcon from '@/assets/delete.svg';
+import renameIcon from '@/assets/rename.png';
 
 export default function Tasks({task, receivingCards, infoTask}) {
   
@@ -88,10 +90,10 @@ export default function Tasks({task, receivingCards, infoTask}) {
               <button className="button button__back" onClick={handleBack}>Back</button>
             </> 
             : <button className="button button__rename" onClick={() => setTaskId(elem.id)}>
-                <img className='rename__img' src="src/assets/rename.png"/>
+                <img className='rename__img' src={renameIcon}/>
               </button>}
             <button className="button button__delete" onClick={() => handleDelete(elem.id)}>
-              <img className='img' src="src/assets/delete.svg"/>
+              <img className='img' src={deleteIcon}/>
             </button>
           </div>
         </li>): '')}
