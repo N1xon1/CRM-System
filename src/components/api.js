@@ -1,73 +1,77 @@
+// Конфигурация API
 const config = {
-    baseUrl:'https://easydev.club/api/v1',
+    baseUrl: 'https://easydev.club/api/v1', // Базовый URL API
     headers: {
-        'Content-Type': 'application/json' 
+        'Content-Type': 'application/json' // Заголовки запросов
     }
-  }
+};
   
-  async function  handleResponse(res) {
-      if(!res.ok) {
-          throw new Error('Запрос не удался');
-      }
-      return await res.json();
-  }
+// Обработчик ответа от сервера
+async function handleResponse(res) {
+    if (!res.ok) {
+        throw new Error('Запрос не удался'); // Ошибка при неудачном запросе
+    }
+    return await res.json(); // Парсинг JSON при успешном ответе
+}
   
-  export async function getTasks() {
-    //   const status = 'inWork';
-      try { 
-          const res = await fetch(`${config.baseUrl}/todos`, {
-              headers:config.headers
-          })
-          return await handleResponse(res)
-      } catch (error){
-          console.error('Ошибка:', error.message);
-      }
-  }
+// Функция получения списка задач
+export async function getTasks() {
+    try { 
+        const res = await fetch(`${config.baseUrl}/todos`, {
+            headers: config.headers
+        });
+        return await handleResponse(res);
+    } catch (error) {
+        console.error('Ошибка:', error.message); // Логирование ошибок
+    }
+}
 
-  export async function postTask(taskData) {
+// Функция создания новой задачи
+export async function postTask(taskData) {
     try {
         const res = await fetch(`${config.baseUrl}/todos`, {
-            headers:config.headers,
-            method:'POST',
+            headers: config.headers,
+            method: 'POST',
             body: JSON.stringify({
-                title:taskData.title,
-                isDone:taskData.isDone
+                title: taskData.title,    // Название задачи
+                isDone: taskData.isDone   // Статус выполнения
             })
-        })
-        return await handleResponse(res)
-    }catch(error) {
-        console.error('Ошибка:', error.message)
+        });
+        return await handleResponse(res);
+    } catch(error) {
+        console.error('Ошибка:', error.message);
     } 
-  }
+}
 
-  export async function deleteTask(id) {
+// Функция удаления задачи
+export async function deleteTask(id) {
     try {
-            await fetch(`${config.baseUrl}//todos/${id}`, {
-            headers:config.headers,
-            method:'DELETE',
-        })
-
-    }catch(error) {
-        console.error('Ошибка:', error.message)
+        await fetch(`${config.baseUrl}//todos/${id}`, {
+            headers: config.headers,
+            method: 'DELETE',
+        });
+    } catch(error) {
+        console.error('Ошибка:', error.message);
     } 
-  }
+}
 
-  export async function editingTask(id, taskData) {
+// Функция редактирования задачи
+export async function editingTask(id, taskData) {
     try {
         const res = await fetch(`${config.baseUrl}//todos/${id}`, {
-            headers:config.headers,
-            method:"PUT",
+            headers: config.headers,
+            method: "PUT",
             body: JSON.stringify({
-                title:taskData.title,
-                isDone:taskData.isDone
+                title: taskData.title,    // Новое название задачи
+                isDone: taskData.isDone   // Новый статус выполнения
             })
-        })
+        });
         return await handleResponse(res);
-    } catch(error) {console.error('Ошибка', error.message)}
-    
-  }
+    } catch(error) {
+        console.error('Ошибка', error.message);
+    }
+}
 
-const q = await getTasks()
-console.log(q)
- 
- 
+// Тестовый вызов функции получения задач (для отладки)
+// const q = await getTasks();
+// console.log(q);

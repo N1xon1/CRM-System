@@ -4,50 +4,59 @@ import { useState } from "react";
 
 export default function Tasks({task, receivingCards, infoTask}) {
   
+  // Состояния для управления редактированием задачи
   const [taskTitle, setTaskTitle] = useState();
   const [taskId, setTaskId] = useState('');
-  const [activeButton, setActiveButton] = useState(false)
+  const [activeButton, setActiveButton] = useState('1')
 
-  const [isDone, setIsDone] = useState('')
-    const countAllTask = infoTask.all;
-    const countCompletedTAsk = infoTask.completed;
-    const countinWorkTask = infoTask.inWork;
+  // Состояние для фильтрации задач (все/в работе/выполненные)
+  const [isDone, setIsDone] = useState(null)
+  
+  // Получение счетчиков задач из props
+  const countAllTask = infoTask.all;
+  const countCompletedTAsk = infoTask.completed;
+  const countinWorkTask = infoTask.inWork;
 
+  // Функция удаления задачи
   async function handleDelete(id) {
     await deleteTask(id);
-    await receivingCards();
+    await receivingCards(); // Обновление списка задач после удаления
   }
 
+  // Функция сохранения изменений задачи
   async function handleSaveEdit(id) {
     await editingTask(id, {
       title: taskTitle,
     });
-    await receivingCards();
-    setTaskId('');
-    setTaskTitle(undefined);
-    
+    await receivingCards(); // Обновление списка задач после редактирования
+    setTaskId(''); // Сброс ID редактируемой задачи
+    setTaskTitle(undefined); // Сброс заголовка задачи
   }
 
+  // Функция отмены редактирования
   function handleBack() {
     setTaskId('');
     setTaskTitle()
   }
 
+  // Функция изменения статуса выполнения задачи
   async function handleCheckboxChange(id, isChecked) {
     await editingTask(id,{
       isDone:isChecked
     })
-    await receivingCards();
+    await receivingCards(); // Обновление списка задач после изменения статуса
   }
 
   return (
     <>
+      {/* Блок активации кнопок */}
       <div className='tasks__state'>
           <button className={`tasks__button ${activeButton==='1' ? 'active' : ''}`} onClick={()=>{setIsDone(null); setActiveButton('1')}}>Все ({countAllTask})</button>
           <button className={`tasks__button ${activeButton==='2' ? 'active' : ''}`} onClick={()=>{setIsDone(false); setActiveButton('2')}}>В работе ({countinWorkTask})</button>
           <button className={`tasks__button ${activeButton==='3' ? 'active' : ''}`} onClick={()=>{setIsDone(true); setActiveButton('3')}}>Сделано ({countCompletedTAsk})</button>
       </div>
       <ul className="tasks">
+        {/* Блок фильтрации задач по категориям*/}
         {task.slice().reverse().map(elem => elem.isDone===isDone || isDone===null ? (  
         <li className="task" key={elem.id}>
           <div className="task__possition alignment">
