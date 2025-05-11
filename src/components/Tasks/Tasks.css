@@ -58,11 +58,19 @@
 
 .button__rename {
     background-color: rgb(42, 92, 255);
+    background-image: url('../../assets/rename.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 130%;
 }
 
 .button__delete {
     background-color: rgb(255, 52, 52);
     margin-right: 20px;
+    background-image: url('../../assets/delete.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 90%;
 }
 
 .button__save {
@@ -74,14 +82,6 @@
     background-color: black;
 }
 
-.rename__img {
-    width:70px;
-    margin: auto;
-}
-
-.img {
-    width: 50px;
-}
 
 .checkbox-round {
     width: 2rem;
