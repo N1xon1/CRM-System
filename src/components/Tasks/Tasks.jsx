@@ -1,6 +1,7 @@
 import "./Tasks.css";
 import { deleteTask, editingTask} from "../api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+// import {useKeyEsc} from '../useKeyEsc';
 
 export default function Tasks({task, receivingCards, infoTask}) {
   
@@ -8,6 +9,20 @@ export default function Tasks({task, receivingCards, infoTask}) {
   const [taskTitle, setTaskTitle] = useState();
   const [taskId, setTaskId] = useState('');
   const [activeButton, setActiveButton] = useState('1')
+
+  // Функция выхода из режима редактирования с помощью кнопки esc
+    const handleKeyDown = (event) => {
+        if(event.key==='Escape' ) {
+            handleBack();
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown)
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [])
 
   // Состояние для фильтрации задач (все/в работе/выполненные)
   const [isDone, setIsDone] = useState(null)
@@ -36,7 +51,7 @@ export default function Tasks({task, receivingCards, infoTask}) {
   // Функция отмены редактирования
   function handleBack() {
     setTaskId('');
-    setTaskTitle()
+    setTaskTitle();
   }
 
   // Функция изменения статуса выполнения задачи
