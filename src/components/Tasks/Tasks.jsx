@@ -38,7 +38,8 @@ export default function Tasks({task, receivingCards, infoTask}) {
   }
 
   // Функция сохранения изменений задачи
-  async function handleSaveEdit(id) {
+  async function handleSaveEdit(id,event) {
+    event.preventDefault();
     await editingTask(id, {
       title: taskTitle,
     });
@@ -82,7 +83,7 @@ export default function Tasks({task, receivingCards, infoTask}) {
               checked={elem.isDone}
             />
           </div>
-          <form className="form_task" onSubmit={() => handleSaveEdit(elem.id)}>
+          <form className="form_task" onSubmit={(event) => handleSaveEdit(elem.id,event)}>
           <div className="possition__title">
             <input className="task__title" 
               type="text" 
