@@ -26,7 +26,6 @@ export default function Tasks({task, receivingCards, infoTask}) {
 
   // Состояние для фильтрации задач (все/в работе/выполненные)
   const [isDone, setIsDone] = useState(null)
-  
   // Получение счетчиков задач из props
   const countAllTask = infoTask.all;
   const countCompletedTAsk = infoTask.completed;
@@ -83,30 +82,32 @@ export default function Tasks({task, receivingCards, infoTask}) {
               checked={elem.isDone}
             />
           </div>
+          <form className="form_task" onSubmit={() => handleSaveEdit(elem.id)}>
           <div className="possition__title">
             <input className="task__title" 
               type="text" 
               name='task'
               id='task'
               onChange={(event) => setTaskTitle(event.target.value)}
-              {...(taskId === elem.id ? {value:taskTitle || elem.title} : {value:elem.title})} 
+              value={taskId === elem.id ? taskTitle : elem.title}
               minLength='2'
               maxLength='64'
               required
-              {...(taskId === elem.id ? {disabled:false} : {disabled:true})}
+              disabled={taskId !== elem.id}
             />
           </div>
           <div className="task__possition">
             {taskId === elem.id ?
             <>
-              <button className="button button__save" onClick={() => handleSaveEdit(elem.id)}>Save</button>
+              <button className="button button__save" >Save</button>
               <button className="button button__back" onClick={handleBack}>Back</button>
             </> 
-            : <button className="button button__rename" onClick={() => setTaskId(elem.id)}>
+            : <button className="button button__rename" onClick={() => {setTaskId(elem.id); setTaskTitle(elem.title);}}>
               </button>}
             <button className="button button__delete" onClick={() => handleDelete(elem.id)}>
             </button>
           </div>
+          </form>
         </li>): '')}
       </ul>
     </>

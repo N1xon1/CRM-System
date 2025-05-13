@@ -27,12 +27,14 @@
 .alignment {
     align-items: center;
 }
+.form_task{
+    display: flex;
+    align-items: center;
+}
 
 .possition__title {
     width: 100%;
     display: flex;
-    align-items: center;
-    justify-content: start;
     margin-left: 15px;
 }
 
