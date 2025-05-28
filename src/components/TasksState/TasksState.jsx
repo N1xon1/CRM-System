@@ -1,27 +1,55 @@
-import './TasksState.css';
+import styles from "./TasksState.module.scss";
 import { useEffect, useState } from "react";
-export default function TasksState({infoTask, onIsDoneChange}) {
-    
-    // Состояние для фильтрации задач (все/в работе/выполненные)
-    const [isDone, setIsDone] = useState(null);
-    const [activeButton, setActiveButton] = useState('1');
-    // Получение счетчиков задач из props
-    const countAllTask = infoTask.all;
-    const countCompletedTAsk = infoTask.completed;
-    const countinWorkTask = infoTask.inWork;
-    //Передача состояния isDone в родительский компонент
-    useEffect(()=>{
-        onIsDoneChange(isDone)
-    },[isDone,onIsDoneChange])
-    
-    return (   
-        <>
-        {/* Блок активации кнопок */}
-        <div className='tasks__state'>
-            <button className={`tasks__button ${activeButton==='1' ? 'active' : ''}`} onClick={()=>{setIsDone(null); setActiveButton('1')}}>Все ({countAllTask})</button>
-            <button className={`tasks__button ${activeButton==='2' ? 'active' : ''}`} onClick={()=>{setIsDone(false); setActiveButton('2')}}>В работе ({countinWorkTask})</button>
-            <button className={`tasks__button ${activeButton==='3' ? 'active' : ''}`} onClick={()=>{setIsDone(true); setActiveButton('3')}}>Сделано ({countCompletedTAsk})</button>
-        </div>
-      </>
-    )
+export default function TasksState({ tasksInfo, onFilterChange, loadTasks }) {
+  // Состояние для фильтрации задач (все/в работе/выполненные)
+  const [currentFilter, setActiveButton] = useState("all");
+  // Получение счетчиков задач из props
+  const countAllTask = tasksInfo.all;
+  const countCompletedTask = tasksInfo.completed;
+  const countInWorkTask = tasksInfo.inWork;
+  //Передача состояния isDone в родительский компонент
+  useEffect(() => {
+    onFilterChange(currentFilter);
+  }, [currentFilter, onFilterChange]);
+
+  return (
+    <>
+      {/* Блок активации кнопок */}
+      <div className={styles.tasks__state}>
+        <button
+          className={`${styles.tasks__button} ${
+            currentFilter === "all" ? styles["tasks__button--active"] : ""
+          }`}
+          onClick={() => {
+            setActiveButton("all");
+            loadTasks("all");
+          }}
+        >
+          Все ({countAllTask})
+        </button>
+        <button
+          className={`${styles.tasks__button} ${
+            currentFilter === "inWork" ? styles["tasks__button--active"] : ""
+          }`}
+          onClick={() => {
+            setActiveButton("inWork");
+            loadTasks("inWork");
+          }}
+        >
+          В работе ({countInWorkTask})
+        </button>
+        <button
+          className={`${styles.tasks__button} ${
+            currentFilter === "completed" ? styles["tasks__button--active"] : ""
+          }`}
+          onClick={() => {
+            setActiveButton("completed");
+            loadTasks("completed");
+          }}
+        >
+          Сделано ({countCompletedTask})
+        </button>
+      </div>
+    </>
+  );
 }

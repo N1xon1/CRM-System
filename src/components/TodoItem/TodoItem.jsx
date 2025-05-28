@@ -1,98 +1,149 @@
-import './TodoItem.css';
-import { deleteTask, editingTask} from "../api";
-import { useState, useEffect } from "react";
+import styles from "./TodoItem.module.scss";
+import { deleteTask, updateTask } from "../../api/api.js";
+import { useState } from "react";
 
-export default function TodoItem({task, stateTask, receivingCards}) {
-     
-    // Состояния для управления редактированием задачи
+export default function TodoItem({ task, taskFilter, loadTasks }) {
+  // Состояния для управления редактированием задачи
   const [taskTitle, setTaskTitle] = useState();
-  const [taskId, setTaskId] = useState('');
+  const [taskId, setTaskId] = useState("");
 
-  // Функция выхода из режима редактирования с помощью кнопки esc
-    const handleKeyDown = (event) => {
-        if(event.key==='Escape' ) {
-            handleBack();
-        }
-    }
-
-    useEffect(() => {
-        document.addEventListener('keydown', handleKeyDown)
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown)
-        }
-    }, [])
+  const [formValid, setFormValid] = useState(false);
+  const [nameTaskDirty, setNameTaskDirty] = useState(false);
+  const [nameTaskError, setNameTaskError] = useState(
+    "Название задачи не может быть пустым"
+  );
 
   // Функция удаления задачи
   async function handleDelete(id) {
-    await deleteTask(id);
-    await receivingCards(); // Обновление списка задач после удаления
+    try {
+      await deleteTask(id);
+      await loadTasks(taskFilter); // Обновление списка задач после удаления
+    } catch (error) {
+      alert(error);
+    }
   }
 
   // Функция сохранения изменений задачи
-  async function handleSaveEdit(id,event) {
-    event.preventDefault();
-    await editingTask(id, {
-      title: taskTitle,
-    });
-
-    await receivingCards(); // Обновление списка задач после редактирования
-    setTaskId(''); // Сброс ID редактируемой задачи
-    setTaskTitle(undefined); // Сброс заголовка задачи
+  async function handleEditSubmit(id, event) {
+    try {
+      event.preventDefault();
+      await updateTask(id, {
+        title: taskTitle,
+      });
+      await loadTasks(taskFilter); // Обновление списка задач после редактирования
+      setTaskId(""); // Сброс ID редактируемой задачи
+      setTaskTitle(undefined); // Сброс заголовка задачи
+      setNameTaskDirty(false); // Сброс валидации
+    } catch (error) {
+      alert(error);
+    }
   }
 
   // Функция отмены редактирования
   function handleBack() {
-    setTaskId('');
+    setTaskId("");
     setTaskTitle();
   }
 
   // Функция изменения статуса выполнения задачи
   async function handleCheckboxChange(id, isChecked) {
-    await editingTask(id,{
-      isDone:isChecked
-    })
-    await receivingCards(); // Обновление списка задач после изменения статуса
+    try {
+      await updateTask(id, {
+        isDone: isChecked,
+      });
+      await loadTasks(taskFilter); // Обновление списка задач после изменения статуса
+    } catch (error) {
+      alert(error);
+    }
   }
+
+  // Валидация при потери фокуса на input
+  const blurHandler = (e) => {
+    if (!e.target.value) {
+      setNameTaskDirty(true);
+      setFormValid(true);
+    }
+  };
+
+  // валидация поля ввода при изменение данных
+  const nameTaskHandler = (e) => {
+    if (e.target.value.length < 2 || e.target.value.length > 64) {
+      setNameTaskDirty(true);
+      setFormValid(true);
+      setNameTaskError("Название задачи должно быть от 2 до 64 сиволов");
+      if (!e.target.value) {
+        setNameTaskError("Название задачи не может быть пустым");
+      }
+    } else {
+      setNameTaskError("");
+      setNameTaskDirty(false);
+      setFormValid(false);
+    }
+  };
+
   return (
     <>
-        {task.slice().reverse().map(elem => elem.isDone===stateTask || stateTask===null ? (  
-            <li className="task" key={elem.id}>
-            <div className="task__possition alignment">
-                <input
-                className="checkbox-round"
-                type="checkbox"
-                name="complitionTask" 
-                onChange={(event) => handleCheckboxChange(elem.id, event.target.checked)}
-                checked={elem.isDone}
-                />
-            </div>
-            <form className="form_task" onSubmit={(event) => handleSaveEdit(elem.id,event)}>
-            <div className="possition__title">
-                <input className="task__title" 
-                type="text" 
-                name='task'
-                id='task'
-                onChange={(event) => setTaskTitle(event.target.value)}
-                value={taskId === elem.id ? taskTitle : elem.title}
-                minLength='2'
-                maxLength='64'
+      <li className={styles.task} key={task.id}>
+        <div style={{ display: "flex", flexDirection:'column'}}> 
+          <form
+            className={styles.task__form}
+            onSubmit={(event) => handleEditSubmit(task.id, event)}
+            noValidate
+          >
+            <input
+              className={styles["task__checkbox-round"]}
+              type="checkbox"
+              name="complitionTask"
+              onChange={(event) =>
+                handleCheckboxChange(task.id, event.target.checked)
+              }
+              checked={task.isDone}
+            />
+              <input
+                className={styles.task__title}
+                type="text"
+                name="task"
+                id="task__name"
+                onChange={(event) => {
+                  setTaskTitle(event.target.value);
+                  nameTaskHandler(event);
+                }}
+                onBlur={(e) => blurHandler(e)}
+                value={taskId === task.id ? taskTitle : task.title}
                 required
-                disabled={taskId !== elem.id}
-                />
-            </div>
-            <div className="task__possition">
-                {taskId === elem.id ?
+                disabled={taskId !== task.id}
+              />
+            <div className={styles.possition}>
+              {taskId === task.id ? (
                 <>
-                <button className="button button__save" >Save</button>
-                <button className="button button__back" onClick={handleBack}>Back</button>
-                </> 
-                : <button className="button button__rename" onClick={() => {setTaskId(elem.id); setTaskTitle(elem.title);}}>
-                </button>}
-                <button className="button button__delete" type='button' onClick={() => handleDelete(elem.id)}>
-                </button>
+                  <button className={styles.button__save} disabled={formValid}>Save</button>
+                  <button className={styles.button__back} onClick={handleBack}>
+                    Back
+                  </button>
+                </>
+              ) : (
+                <button
+                  className={styles.button__rename}
+                  onClick={() => {
+                    setTaskId(task.id);
+                    setTaskTitle(task.title);
+                  }}
+                ></button>
+              )}
+              <button
+                className={styles.button__delete}
+                type="button"
+                onClick={() => handleDelete(task.id)}
+              ></button>
             </div>
-            </form>
-            </li>): '')}
-        </>
-        )
+          </form>
+          {nameTaskDirty && nameTaskError && (
+            <span style={{ display: "flex", color: "red", marginLeft:'60px'}}>
+              {nameTaskError}
+            </span>
+          )}
+        </div>
+      </li>
+    </>
+  );
 }
