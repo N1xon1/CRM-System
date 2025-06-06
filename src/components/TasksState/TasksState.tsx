@@ -1,10 +1,10 @@
 import styles from "./TasksState.module.scss";
 import { useEffect, useState } from "react";
-import { TodoInfo, taskStatus, LoadTask } from "@/models/todo";
+import { TodoInfo, TaskStatus, LoadTask } from "@/models/todo";
 
 type TasksStateProps = {
   tasksInfo: TodoInfo;
-  onFilterChange: (isDoneValue: taskStatus) => void;
+  onFilterChange: (isDoneValue: TaskStatus) => void;
   loadTasks: LoadTask;
 };
 
@@ -14,7 +14,7 @@ export default function TasksState({
   loadTasks,
 }: TasksStateProps) {
   // Состояние для фильтрации задач (все/в работе/выполненные)
-  const [currentFilter, setCurrentFilter] = useState<taskStatus>("all");
+  const [currentFilter, setCurrentFilter] = useState<TaskStatus>("all");
   // Получение счетчиков задач из props
   const countAllTask = tasksInfo.all;
   const countCompletedTask = tasksInfo.completed;

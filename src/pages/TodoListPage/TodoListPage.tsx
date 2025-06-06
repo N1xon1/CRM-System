@@ -3,7 +3,13 @@ import Tasks from "@/components/Tasks/Tasks";
 import TasksState from "@/components/TasksState/TasksState";
 import { getTasks } from "@/api/api.js";
 import { useEffect, useState } from "react";
-import { TodoInfo, taskStatus, Todo, MetaResponse, LoadTask } from "@/models/todo";
+import {
+  TodoInfo,
+  TaskStatus,
+  Todo,
+  MetaResponse,
+  LoadTask,
+} from "@/models/todo";
 
 export default function TodoListPage() {
   const [tasks, setTasks] = useState<Todo[]>([]);
@@ -12,11 +18,9 @@ export default function TodoListPage() {
     completed: 0,
     inWork: 0,
   });
-  const [taskFilter, setTaskFilter] = useState<taskStatus>("all");
+  const [taskFilter, setTaskFilter] = useState<TaskStatus>("all");
   // Функция получения и обновления задач с сервера
-  const loadTasks = async <Todo, TodoInfo>(
-    taskFilter: taskStatus
-  ): Promise<MetaResponse<Todo, TodoInfo> | undefined> => {
+  const loadTasks = async (taskFilter: TaskStatus): Promise<void> => {
     try {
       const tasks = await getTasks(taskFilter);
       if (tasks !== undefined) {
@@ -25,10 +29,9 @@ export default function TodoListPage() {
       }
     } catch (error) {
       alert(error);
-      return undefined;
     }
   };
-  const handleFilterChange = (isDoneValue: taskStatus) => {
+  const handleFilterChange = (isDoneValue: TaskStatus) => {
     setTaskFilter(isDoneValue);
   };
   // Первоначальная загрузка задач при монтировании

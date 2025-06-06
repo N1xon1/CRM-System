@@ -1,10 +1,10 @@
 import styles from "./Tasks.module.scss";
 import TodoItem from "../TodoItem/TodoItem";
-import { taskStatus, Todo, LoadTask } from "@/models/todo";
+import { TaskStatus, Todo, LoadTask } from "@/models/todo";
 type TasksProps = {
   tasks: Todo[];
   loadTasks: LoadTask;
-  taskFilter: taskStatus;
+  taskFilter: TaskStatus;
 };
 
 export default function Tasks({ tasks, loadTasks, taskFilter }: TasksProps) {

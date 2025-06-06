@@ -1,11 +1,11 @@
 import styles from "./TodoItem.module.scss";
 import { deleteTask, updateTask } from "@/api/api.js";
 import { useState } from "react";
-import { taskStatus, Todo, LoadTask} from "@/models/todo";
+import { TaskStatus, Todo, LoadTask } from "@/models/todo";
 
 type TodoItemProps = {
   task: Todo;
-  taskFilter: taskStatus;
+  taskFilter: TaskStatus;
   loadTasks: LoadTask;
 };
 
@@ -16,10 +16,9 @@ export default function TodoItem({
 }: TodoItemProps) {
   // Состояния для управления редактированием задачи
   const [taskTitle, setTaskTitle] = useState<string>("");
-  const [taskId, setTaskId] = useState<number | null>(null);
-
-  const [formValid, setFormValid] = useState<boolean>(false);
-  const [nameTaskDirty, setNameTaskDirty] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  // валидация
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [nameTaskError, setNameTaskError] = useState<string>(
     "Название задачи не может быть пустым"
   );
@@ -45,9 +44,8 @@ export default function TodoItem({
         title: taskTitle,
       });
       await loadTasks(taskFilter); // Обновление списка задач после редактирования
-      setTaskId(null); // Сброс ID редактируемой задачи
+      setIsEdit(false);
       setTaskTitle(""); // Сброс заголовка задачи
-      setNameTaskDirty(false); // Сброс валидации
     } catch (error) {
       alert(error);
       return undefined;
@@ -56,7 +54,8 @@ export default function TodoItem({
 
   // Функция отмены редактирования
   function handleBack() {
-    setTaskId(null);
+    // setTaskId(null);
+    setIsEdit(false);
     setTaskTitle("");
   }
 
@@ -79,26 +78,29 @@ export default function TodoItem({
   // Валидация при потери фокуса на input
   const blurHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.value) {
-      setNameTaskDirty(true);
-      setFormValid(true);
+      setIsFormValid(true);
     }
   };
 
   // валидация поля ввода при изменение данных
-  const nameTaskHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setTaskTitle(e.target.value);
     if (e.target.value.length < 2 || e.target.value.length > 64) {
-      setNameTaskDirty(true);
-      setFormValid(true);
+      setIsFormValid(true);
       setNameTaskError("Название задачи должно быть от 2 до 64 символов");
       if (!e.target.value) {
         setNameTaskError("Название задачи не может быть пустым");
       }
     } else {
       setNameTaskError("");
-      setNameTaskDirty(false);
-      setFormValid(false);
+      setIsFormValid(false);
     }
-  };
+  }
+
+  function handleRenameClick(taskTitle:string) {
+    setIsEdit(true);
+    setTaskTitle(taskTitle);
+  }
 
   return (
     <>
@@ -121,32 +123,33 @@ export default function TodoItem({
               type="text"
               name="task"
               id="task__name"
-              onChange={(e) => {
-                setTaskTitle(e.target.value);
-                nameTaskHandler(e);
-              }}
+              onChange={(e) => handleInputChange(e)}
               onBlur={(e) => blurHandler(e)}
-              value={taskId === task.id ? taskTitle : task.title}
+              value={isEdit ? taskTitle : task.title}
               required
-              disabled={taskId !== task.id}
+              disabled={!isEdit}
             />
             <div className={styles.possition}>
-              {taskId === task.id ? (
+              {isEdit ? (
                 <>
-                  <button className={styles.button__save} disabled={formValid}>
+                  <button
+                    className={styles.button__save}
+                    disabled={isFormValid}
+                  >
                     Save
                   </button>
-                  <button className={styles.button__back} onClick={handleBack}>
+                  <button
+                    className={styles.button__back}
+                    onClick={handleBack}
+                    type="button"
+                  >
                     Back
                   </button>
                 </>
               ) : (
                 <button
                   className={styles.button__rename}
-                  onClick={() => {
-                    setTaskId(task.id);
-                    setTaskTitle(task.title);
-                  }}
+                  onClick={() => handleRenameClick(task.title)}
                 ></button>
               )}
               <button
@@ -156,7 +159,7 @@ export default function TodoItem({
               ></button>
             </div>
           </form>
-          {nameTaskDirty && nameTaskError && (
+          {isFormValid && (
             <span style={{ display: "flex", color: "red", marginLeft: "60px" }}>
               {nameTaskError}
             </span>

@@ -1,4 +1,4 @@
-import { TodoInfo, taskStatus, Todo, MetaResponse } from "@/models/todo";
+import { TodoInfo, TaskStatus, Todo, MetaResponse } from "@/models/todo";
 
 // Конфигурация API
 const config = {
@@ -18,7 +18,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
 
 // Функция получения списка задач
 export async function getTasks(
-  taskFilter: taskStatus
+  taskFilter: TaskStatus
 ): Promise<MetaResponse<Todo, TodoInfo> | undefined> {
   try {
     const res = await fetch(`${config.baseUrl}/todos?filter=${taskFilter}`, {

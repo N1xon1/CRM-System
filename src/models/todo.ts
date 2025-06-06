@@ -23,8 +23,6 @@ export interface MetaResponse<T, N> {
   };
 }
 
-export type taskStatus = "all" | "inWork" | "completed";
+export type TaskStatus = "all" | "inWork" | "completed";
 
-export type LoadTask = (
-  taskFilter: taskStatus
-) => Promise<MetaResponse<Todo, TodoInfo> | undefined>;
+export type LoadTask = (taskFilter: TaskStatus) => Promise<void>;

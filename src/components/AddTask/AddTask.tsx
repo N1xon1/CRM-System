@@ -1,32 +1,28 @@
 import { postTask } from "@/api/api.js";
 import styles from "./AddTask.module.scss";
 import { useState } from "react";
-import { taskStatus, LoadTask, Todo } from "@/models/todo";
+import { TaskStatus, LoadTask, Todo } from "@/models/todo";
 
 type AddTaskProps = {
   loadTasks: LoadTask;
-  taskFilter: taskStatus;
+  taskFilter: TaskStatus;
 };
 
 export default function AddTask({ loadTasks, taskFilter }: AddTaskProps) {
   // Хранит текст новой задачи
   const [taskTitle, setTaskTitle] = useState<string>("");
   // валидация
-  const [formValid, setFormValid] = useState<boolean>(true);
-  const [nameTaskDirty, setNameTaskDirty] = useState<boolean>(false);
-  const [nameTaskError, setNameTaskError] = useState<string>(
-    "Название задачи не может быть пустым"
-  );
+  const [isFormValid, setIsFormValid] = useState<boolean>(true);
+  const [nameTaskError, setNameTaskError] = useState<string>("");
 
   // Отправка новой задачи на сервер
-  async function handleSubmit(e: React.FormEvent):Promise<Todo | undefined> {
+  async function handleSubmit(e: React.FormEvent): Promise<Todo | undefined> {
     try {
       e.preventDefault();
       await postTask({ title: taskTitle });
       setTaskTitle(""); // Очистка поля ввода
       loadTasks(taskFilter); // Обновление списка задач
-      setNameTaskDirty(false); // Сброс валидации
-      setFormValid(true);
+      setIsFormValid(true);
     } catch (error) {
       alert(error);
       return undefined;
@@ -35,26 +31,25 @@ export default function AddTask({ loadTasks, taskFilter }: AddTaskProps) {
   // Валидация при потери фокуса на input
   const blurHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.value) {
-      setNameTaskDirty(true);
-      setFormValid(true);
+      setIsFormValid(true);
+      setNameTaskError("Название задачи не может быть пустым");
     }
   };
 
   // валидация поля ввода при изменение данных
-  const nameTaskHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setTaskTitle(e.target.value);
     if (e.target.value.length < 2 || e.target.value.length > 64) {
-      setNameTaskDirty(true);
-      setFormValid(true);
+      setIsFormValid(true);
       setNameTaskError("Название задачи должно быть от 2 до 64 символов");
       if (!e.target.value) {
         setNameTaskError("Название задачи не может быть пустым");
       }
     } else {
       setNameTaskError("");
-      setNameTaskDirty(false);
-      setFormValid(false);
+      setIsFormValid(false);
     }
-  };
+  }
 
   return (
     <header>
@@ -63,10 +58,7 @@ export default function AddTask({ loadTasks, taskFilter }: AddTaskProps) {
         <input
           onBlur={blurHandler}
           className={styles.task_name}
-          onChange={(e) => {
-            setTaskTitle(e.target.value);
-            nameTaskHandler(e);
-          }}
+          onChange={(e) => handleInputChange(e)}
           value={taskTitle}
           id="name"
           placeholder="Task To Be Done..."
@@ -74,14 +66,14 @@ export default function AddTask({ loadTasks, taskFilter }: AddTaskProps) {
         />
 
         <button
-          disabled={formValid}
+          disabled={isFormValid}
           className={styles.button_add}
           type="submit"
         >
           Add
         </button>
       </form>
-      {nameTaskDirty && nameTaskError && (
+      {isFormValid && (
         <div style={{ display: "flex", color: "red", marginTop: "10px" }}>
           {nameTaskError}
         </div>
