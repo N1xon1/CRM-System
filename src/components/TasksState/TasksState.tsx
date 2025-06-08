@@ -1,8 +1,20 @@
 import styles from "./TasksState.module.scss";
 import { useEffect, useState } from "react";
-export default function TasksState({ tasksInfo, onFilterChange, loadTasks }) {
+import { TodoInfo, TaskStatus, LoadTask } from "@/models/todo";
+
+type TasksStateProps = {
+  tasksInfo: TodoInfo;
+  onFilterChange: (isDoneValue: TaskStatus) => void;
+  loadTasks: LoadTask;
+};
+
+export default function TasksState({
+  tasksInfo,
+  onFilterChange,
+  loadTasks,
+}: TasksStateProps) {
   // Состояние для фильтрации задач (все/в работе/выполненные)
-  const [currentFilter, setActiveButton] = useState("all");
+  const [currentFilter, setCurrentFilter] = useState<TaskStatus>("all");
   // Получение счетчиков задач из props
   const countAllTask = tasksInfo.all;
   const countCompletedTask = tasksInfo.completed;
@@ -21,7 +33,7 @@ export default function TasksState({ tasksInfo, onFilterChange, loadTasks }) {
             currentFilter === "all" ? styles["tasks__button--active"] : ""
           }`}
           onClick={() => {
-            setActiveButton("all");
+            setCurrentFilter("all");
             loadTasks("all");
           }}
         >
@@ -32,7 +44,7 @@ export default function TasksState({ tasksInfo, onFilterChange, loadTasks }) {
             currentFilter === "inWork" ? styles["tasks__button--active"] : ""
           }`}
           onClick={() => {
-            setActiveButton("inWork");
+            setCurrentFilter("inWork");
             loadTasks("inWork");
           }}
         >
@@ -43,7 +55,7 @@ export default function TasksState({ tasksInfo, onFilterChange, loadTasks }) {
             currentFilter === "completed" ? styles["tasks__button--active"] : ""
           }`}
           onClick={() => {
-            setActiveButton("completed");
+            setCurrentFilter("completed");
             loadTasks("completed");
           }}
         >

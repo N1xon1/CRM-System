@@ -1,9 +1,16 @@
 import styles from "./Tasks.module.scss";
 import TodoItem from "../TodoItem/TodoItem";
-export default function Tasks({ tasks, loadTasks, taskFilter }) {
+import { TaskStatus, Todo, LoadTask } from "@/models/todo";
+type TasksProps = {
+  tasks: Todo[];
+  loadTasks: LoadTask;
+  taskFilter: TaskStatus;
+};
+
+export default function Tasks({ tasks, loadTasks, taskFilter }: TasksProps) {
   return (
     <ul className={styles.tasks}>
-      {tasks.map((task) => (
+      {tasks.map((task: Todo) => (
         <TodoItem
           task={task}
           taskFilter={taskFilter}
