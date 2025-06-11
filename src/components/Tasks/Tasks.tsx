@@ -1,6 +1,7 @@
 import styles from "./Tasks.module.scss";
 import TodoItem from "../TodoItem/TodoItem";
 import { TaskStatus, Todo, LoadTask } from "@/models/todo";
+import { List } from "antd";
 type TasksProps = {
   tasks: Todo[];
   loadTasks: LoadTask;
@@ -9,7 +10,7 @@ type TasksProps = {
 
 export default function Tasks({ tasks, loadTasks, taskFilter }: TasksProps) {
   return (
-    <ul className={styles.tasks}>
+    <List className={styles.tasks} dataSource={tasks} >
       {tasks.map((task: Todo) => (
         <TodoItem
           task={task}
@@ -18,6 +19,6 @@ export default function Tasks({ tasks, loadTasks, taskFilter }: TasksProps) {
           key={task.id}
         />
       ))}
-    </ul>
+    </List>
   );
 }

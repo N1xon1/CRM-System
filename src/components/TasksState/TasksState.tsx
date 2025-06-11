@@ -1,6 +1,7 @@
 import styles from "./TasksState.module.scss";
 import { useEffect, useState } from "react";
 import { TodoInfo, TaskStatus, LoadTask } from "@/models/todo";
+import { Button } from "antd";
 
 type TasksStateProps = {
   tasksInfo: TodoInfo;
@@ -28,9 +29,9 @@ export default function TasksState({
     <>
       {/* Блок активации кнопок */}
       <div className={styles.tasks__state}>
-        <button
-          className={`${styles.tasks__button} ${
-            currentFilter === "all" ? styles["tasks__button--active"] : ""
+        <Button
+          className={`${styles.tasks__Button} ${
+            currentFilter === "all" ? styles["tasks__Button--active"] : ""
           }`}
           onClick={() => {
             setCurrentFilter("all");
@@ -38,10 +39,10 @@ export default function TasksState({
           }}
         >
           Все ({countAllTask})
-        </button>
-        <button
-          className={`${styles.tasks__button} ${
-            currentFilter === "inWork" ? styles["tasks__button--active"] : ""
+        </Button>
+        <Button
+          className={`${styles.tasks__Button} ${
+            currentFilter === "inWork" ? styles["tasks__Button--active"] : ""
           }`}
           onClick={() => {
             setCurrentFilter("inWork");
@@ -49,10 +50,10 @@ export default function TasksState({
           }}
         >
           В работе ({countInWorkTask})
-        </button>
-        <button
-          className={`${styles.tasks__button} ${
-            currentFilter === "completed" ? styles["tasks__button--active"] : ""
+        </Button>
+        <Button
+          className={`${styles.tasks__Button} ${
+            currentFilter === "completed" ? styles["tasks__Button--active"] : ""
           }`}
           onClick={() => {
             setCurrentFilter("completed");
@@ -60,7 +61,7 @@ export default function TasksState({
           }}
         >
           Сделано ({countCompletedTask})
-        </button>
+        </Button>
       </div>
     </>
   );

@@ -3,12 +3,11 @@ import Tasks from "@/components/Tasks/Tasks";
 import TasksState from "@/components/TasksState/TasksState";
 import { getTasks } from "@/api/api.js";
 import { useEffect, useState } from "react";
+
 import {
   TodoInfo,
   TaskStatus,
-  Todo,
-  MetaResponse,
-  LoadTask,
+  Todo
 } from "@/models/todo";
 
 export default function TodoListPage() {

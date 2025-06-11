@@ -1,7 +1,8 @@
 import styles from "./TodoItem.module.scss";
 import { deleteTask, updateTask } from "@/api/api.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TaskStatus, Todo, LoadTask } from "@/models/todo";
+import { Form, Input, Button, Checkbox } from "antd";
 
 type TodoItemProps = {
   task: Todo;
@@ -15,14 +16,11 @@ export default function TodoItem({
   loadTasks,
 }: TodoItemProps) {
   // Состояния для управления редактированием задачи
-  const [taskTitle, setTaskTitle] = useState<string>("");
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  
   // валидация
-  const [isFormValid, setIsFormValid] = useState<boolean>(false);
-  const [nameTaskError, setNameTaskError] = useState<string>(
-    "Название задачи не может быть пустым"
-  );
-
+  const [form] = Form.useForm();
+  
   // Функция удаления задачи
   async function handleDelete(id: number) {
     try {
@@ -36,16 +34,14 @@ export default function TodoItem({
   // Функция сохранения изменений задачи
   async function handleEditSubmit(
     id: number,
-    e: React.FormEvent<HTMLFormElement>
+    values: { taskTitle: string }
   ): Promise<Todo | undefined> {
     try {
-      e.preventDefault();
       await updateTask(id, {
-        title: taskTitle,
+        title: values.taskTitle,
       });
       await loadTasks(taskFilter); // Обновление списка задач после редактирования
       setIsEdit(false);
-      setTaskTitle(""); // Сброс заголовка задачи
     } catch (error) {
       alert(error);
       return undefined;
@@ -54,9 +50,7 @@ export default function TodoItem({
 
   // Функция отмены редактирования
   function handleBack() {
-    // setTaskId(null);
     setIsEdit(false);
-    setTaskTitle("");
   }
 
   // Функция изменения статуса выполнения задачи
@@ -75,95 +69,79 @@ export default function TodoItem({
     }
   }
 
-  // Валидация при потери фокуса на input
-  const blurHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.value) {
-      setIsFormValid(true);
-    }
-  };
-
-  // валидация поля ввода при изменение данных
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setTaskTitle(e.target.value);
-    if (e.target.value.length < 2 || e.target.value.length > 64) {
-      setIsFormValid(true);
-      setNameTaskError("Название задачи должно быть от 2 до 64 символов");
-      if (!e.target.value) {
-        setNameTaskError("Название задачи не может быть пустым");
-      }
-    } else {
-      setNameTaskError("");
-      setIsFormValid(false);
-    }
-  }
-
-  function handleRenameClick(taskTitle:string) {
+  function handleRenameClick(taskTitle: string) {
     setIsEdit(true);
-    setTaskTitle(taskTitle);
   }
 
   return (
     <>
       <li className={styles.task} key={task.id}>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <form
+          <Form
+            form={form}
             className={styles.task__form}
-            onSubmit={(e) => handleEditSubmit(task.id, e)}
+            onFinish={(e) => handleEditSubmit(task.id, e)}
             noValidate
+            initialValues={{ taskTitle: task.title }}
           >
-            <input
-              className={styles["task__checkbox-round"]}
-              type="checkbox"
-              name="complitionTask"
-              onChange={(e) => handleCheckboxChange(task.id, e.target.checked)}
-              checked={task.isDone}
-            />
-            <input
-              className={styles.task__title}
-              type="text"
-              name="task"
-              id="task__name"
-              onChange={(e) => handleInputChange(e)}
-              onBlur={(e) => blurHandler(e)}
-              value={isEdit ? taskTitle : task.title}
-              required
-              disabled={!isEdit}
-            />
+            <Form.Item>
+              <Checkbox
+                type="checkbox"
+                name="complitionTask"
+                onChange={(e) =>
+                  handleCheckboxChange(task.id, e.target.checked)
+                }
+                checked={task.isDone}
+              />
+            </Form.Item>
+            <Form.Item
+              name="taskTitle"
+              rules={[
+                {
+                  required: true,
+                  message: "Название задачи не может быть пустым",
+                },
+                { min: 2, message: "Минимум 2 символов!" },
+                { max: 64, message: "Максимум 64 символов!" },
+              ]}
+            >
+              <Input
+                name="taskTitle"
+                className={styles.task__title}
+                disabled={!isEdit}
+              />
+            </Form.Item>
             <div className={styles.possition}>
               {isEdit ? (
                 <>
-                  <button
-                    className={styles.button__save}
-                    disabled={isFormValid}
-                  >
+                  <Button className={styles.Button__save} htmlType="submit">
                     Save
-                  </button>
-                  <button
-                    className={styles.button__back}
+                  </Button>
+                  <Button
+                    className={styles.Button__back}
                     onClick={handleBack}
-                    type="button"
+                    htmlType="button"
                   >
                     Back
-                  </button>
+                  </Button>
                 </>
               ) : (
-                <button
-                  className={styles.button__rename}
+                <Button
+                  className={styles.Button__rename}
                   onClick={() => handleRenameClick(task.title)}
-                ></button>
+                >
+                  Rename
+                </Button>
               )}
-              <button
-                className={styles.button__delete}
-                type="button"
+              <Button
+                className={styles.Button__delete}
+                htmlType="button"
                 onClick={() => handleDelete(task.id)}
-              ></button>
+              >
+                Delete
+              </Button>
             </div>
-          </form>
-          {isFormValid && (
-            <span style={{ display: "flex", color: "red", marginLeft: "60px" }}>
-              {nameTaskError}
-            </span>
-          )}
+          </Form>
         </div>
       </li>
     </>
