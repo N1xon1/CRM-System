@@ -4,11 +4,7 @@ import TasksState from "@/components/TasksState/TasksState";
 import { getTasks } from "@/api/api.js";
 import { useEffect, useState } from "react";
 
-import {
-  TodoInfo,
-  TaskStatus,
-  Todo
-} from "@/models/todo";
+import { TodoInfo, TaskStatus, Todo, MetaResponse } from "@/models/todo";
 
 export default function TodoListPage() {
   const [tasks, setTasks] = useState<Todo[]>([]);
@@ -21,10 +17,10 @@ export default function TodoListPage() {
   // Функция получения и обновления задач с сервера
   const loadTasks = async (taskFilter: TaskStatus): Promise<void> => {
     try {
-      const tasks = await getTasks(taskFilter);
-      if (tasks !== undefined) {
-        setTasks(tasks.data); // Обновление списка задач
-        setTasksInfo(tasks.info);
+      const data = await getTasks(taskFilter);
+      if (data !== undefined) {
+        setTasks(data.data); // Обновление списка задач
+        setTasksInfo(data.info);
       }
     } catch (error) {
       alert(error);
@@ -36,7 +32,12 @@ export default function TodoListPage() {
   // Первоначальная загрузка задач при монтировании
   useEffect(() => {
     loadTasks(taskFilter);
-  }, []);
+    console.log(taskFilter)
+    const interval = setInterval(()=>{loadTasks(taskFilter)}, 5000)
+
+    return () => clearInterval(interval)
+
+  }, [taskFilter]);
 
   return (
     <>
