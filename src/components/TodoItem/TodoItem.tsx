@@ -51,6 +51,7 @@ export default function TodoItem({
   // Функция отмены редактирования
   function handleBack() {
     setIsEdit(false);
+    form.resetFields();
   }
 
   // Функция изменения статуса выполнения задачи
@@ -69,7 +70,7 @@ export default function TodoItem({
     }
   }
 
-  function handleRenameClick(taskTitle: string) {
+  function handleRenameClick() {
     setIsEdit(true);
   }
 
@@ -128,7 +129,7 @@ export default function TodoItem({
               ) : (
                 <Button
                   className={styles.Button__rename}
-                  onClick={() => handleRenameClick(task.title)}
+                  onClick={handleRenameClick}
                 >
                   Rename
                 </Button>
