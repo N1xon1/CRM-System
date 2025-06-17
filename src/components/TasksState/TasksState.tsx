@@ -1,6 +1,7 @@
 import styles from "./TasksState.module.scss";
 import { useEffect, useState } from "react";
 import { TodoInfo, TaskStatus, LoadTask } from "@/models/todo";
+import { Button, Menu } from "antd";
 
 type TasksStateProps = {
   tasksInfo: TodoInfo;
@@ -24,44 +25,30 @@ export default function TasksState({
     onFilterChange(currentFilter);
   }, [currentFilter, onFilterChange]);
 
+  function handleClick(state: TaskStatus) {
+    setCurrentFilter(state);
+    loadTasks(state);
+  }
+
   return (
     <>
-      {/* Блок активации кнопок */}
-      <div className={styles.tasks__state}>
-        <button
-          className={`${styles.tasks__button} ${
-            currentFilter === "all" ? styles["tasks__button--active"] : ""
-          }`}
-          onClick={() => {
-            setCurrentFilter("all");
-            loadTasks("all");
+      <Menu className={styles.tasks__state}
+      style={{ width:'100%', gap:0, textAlign:'center', border: '2px solid white', background:"rgb(245, 245, 245)", borderRadius:70}}
+      defaultSelectedKeys={["all"]}
+      onClick={(e) => {
+            handleClick(e.key as TaskStatus);
           }}
-        >
-          Все ({countAllTask})
-        </button>
-        <button
-          className={`${styles.tasks__button} ${
-            currentFilter === "inWork" ? styles["tasks__button--active"] : ""
-          }`}
-          onClick={() => {
-            setCurrentFilter("inWork");
-            loadTasks("inWork");
-          }}
-        >
-          В работе ({countInWorkTask})
-        </button>
-        <button
-          className={`${styles.tasks__button} ${
-            currentFilter === "completed" ? styles["tasks__button--active"] : ""
-          }`}
-          onClick={() => {
-            setCurrentFilter("completed");
-            loadTasks("completed");
-          }}
-        >
-          Сделано ({countCompletedTask})
-        </button>
-      </div>
+      items={[
+            {key: 'all',
+            label: 'Все'},
+            {key: 'inWork',
+            label: 'В работе'},
+            {key: 'completed',
+            label: 'Сделано'},
+
+      ]}>
+      </Menu>
     </>
   );
 }
+
