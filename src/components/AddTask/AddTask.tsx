@@ -1,7 +1,8 @@
 import { postTask } from "@/api/api.js";
 import styles from "./AddTask.module.scss";
-import { useState } from "react";
 import { TaskStatus, LoadTask, Todo } from "@/models/todo";
+import { Form, Input, Button, Flex } from "antd";
+import { PageHeader } from "@ant-design/pro-components";
 
 type AddTaskProps = {
   loadTasks: LoadTask;
@@ -9,75 +10,50 @@ type AddTaskProps = {
 };
 
 export default function AddTask({ loadTasks, taskFilter }: AddTaskProps) {
-  // Хранит текст новой задачи
-  const [taskTitle, setTaskTitle] = useState<string>("");
-  // валидация
-  const [isFormValid, setIsFormValid] = useState<boolean>(true);
-  const [nameTaskError, setNameTaskError] = useState<string>("");
+  const [form] = Form.useForm();
 
   // Отправка новой задачи на сервер
-  async function handleSubmit(e: React.FormEvent): Promise<Todo | undefined> {
+  async function handleSubmit(values: {
+    taskTitle: string;
+  }): Promise<Todo | undefined> {
     try {
-      e.preventDefault();
-      await postTask({ title: taskTitle });
-      setTaskTitle(""); // Очистка поля ввода
+      await postTask({ title: values.taskTitle });
       loadTasks(taskFilter); // Обновление списка задач
-      setIsFormValid(true);
+      form.resetFields();
     } catch (error) {
       alert(error);
       return undefined;
     }
   }
-  // Валидация при потери фокуса на input
-  const blurHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.value) {
-      setIsFormValid(true);
-      setNameTaskError("Название задачи не может быть пустым");
-    }
-  };
-
-  // валидация поля ввода при изменение данных
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setTaskTitle(e.target.value);
-    if (e.target.value.length < 2 || e.target.value.length > 64) {
-      setIsFormValid(true);
-      setNameTaskError("Название задачи должно быть от 2 до 64 символов");
-      if (!e.target.value) {
-        setNameTaskError("Название задачи не может быть пустым");
-      }
-    } else {
-      setNameTaskError("");
-      setIsFormValid(false);
-    }
-  }
 
   return (
-    <header>
+    <PageHeader>
       {/* Форма добавления задачи */}
-      <form onSubmit={handleSubmit} noValidate>
-        <input
-          onBlur={blurHandler}
-          className={styles.task_name}
-          onChange={(e) => handleInputChange(e)}
-          value={taskTitle}
-          id="name"
-          placeholder="Task To Be Done..."
-          required
-        />
-
-        <button
-          disabled={isFormValid}
-          className={styles.button_add}
-          type="submit"
-        >
-          Add
-        </button>
-      </form>
-      {isFormValid && (
-        <div style={{ display: "flex", color: "red", marginTop: "10px" }}>
-          {nameTaskError}
-        </div>
-      )}
-    </header>
+      <Form form={form} onFinish={handleSubmit} noValidate>
+        <Flex justify="space-between" align="center">
+          <Form.Item
+            name="taskTitle"
+            rules={[
+              {
+                required: true,
+                message: "Название задачи не может быть пустым",
+              },
+              { min: 2, message: "Минимум 2 символов!" },
+              { max: 64, message: "Максимум 64 символов!" },
+            ]}
+          >
+            <Input
+              className={styles.task_name}
+              id="name"
+              placeholder="Task To Be Done..."
+              required
+            />
+          </Form.Item>
+          <Button type="primary" htmlType="submit" style={{marginBottom:15}}>
+            Add
+          </Button>
+        </Flex>
+      </Form>
+    </PageHeader>
   );
 }

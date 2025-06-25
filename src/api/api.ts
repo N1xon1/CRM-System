@@ -1,62 +1,59 @@
 import { TodoInfo, TaskStatus, Todo, MetaResponse } from "@/models/todo";
+import axios, { AxiosError} from "axios";
 
 // Конфигурация API
-const config = {
-  baseUrl: "https://easydev.club/api/v1", // Базовый URL API
+const configApi = axios.create({
+  baseURL: "https://easydev.club/api/v1", // Базовый URL API
   headers: {
     "Content-Type": "application/json", // Заголовки запросов
-  },
+  }
+});
+//Обработчики ошибок
+configApi.interceptors.response.use(
+  (res) => {
+    return res;
+  }
+);
+// Функция получения списка задач
+export const getTasks = async (
+  taskFilter: TaskStatus
+): Promise<MetaResponse<Todo, TodoInfo>> => {
+  try {
+    const res = await configApi.get<MetaResponse<Todo, TodoInfo>>(
+      `/todos`, 
+      { 
+        params: {filter: taskFilter}
+    });
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
 };
 
-// Обработчик ответа от сервера
-async function handleResponse<T>(res: Response): Promise<T> {
-  if (!res.ok) {
-    throw new Error("Запрос не удался"); // Ошибка при неудачном запросе
-  }
-  return await res.json(); // Парсинг JSON при успешном ответе
-}
-
-// Функция получения списка задач
-export async function getTasks(
-  taskFilter: TaskStatus
-): Promise<MetaResponse<Todo, TodoInfo> | undefined> {
-  try {
-    const res = await fetch(`${config.baseUrl}/todos?filter=${taskFilter}`, {
-      headers: config.headers,
-    });
-    return await handleResponse<MetaResponse<Todo, TodoInfo>>(res);
-  } catch (error) {
-    console.error("Ошибка:", (error as Error).message); // Логирование ошибок
-    return undefined;
-  }
-}
-
 // Функция создания новой задачи
-export async function postTask(taskData: {
+export const postTask = async (taskData: {
   title: string;
-}): Promise<Todo | undefined> {
+}): Promise<Todo> => {
   try {
-    const res = await fetch(`${config.baseUrl}/todos`, {
-      headers: config.headers,
-      method: "POST",
-      body: JSON.stringify(taskData),
-    });
-    return await handleResponse<Todo>(res);
+    const res = await configApi.post<Todo>("/todos", taskData);
+    return res.data;
   } catch (error) {
-    console.error("Ошибка:", (error as Error).message);
-    return undefined;
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
   }
-}
+};
 
 // Функция удаления задачи
 export async function deleteTask(id: number): Promise<void> {
   try {
-    await fetch(`${config.baseUrl}/todos/${id}`, {
-      headers: config.headers,
-      method: "DELETE",
-    });
+    await configApi.delete(`/todos/${id}`);
   } catch (error) {
-    console.error("Ошибка:", (error as Error).message);
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
   }
 }
 
@@ -64,16 +61,13 @@ export async function deleteTask(id: number): Promise<void> {
 export async function updateTask(
   id: number,
   taskData: { title?: string; isDone?: boolean }
-): Promise<Todo | undefined> {
+): Promise<Todo> {
   try {
-    const res = await fetch(`${config.baseUrl}/todos/${id}`, {
-      headers: config.headers,
-      method: "PUT",
-      body: JSON.stringify(taskData),
-    });
-    return await handleResponse<Todo>(res);
+    const res = await configApi.put(`/todos/${id}`, taskData);
+    return res.data;
   } catch (error) {
-    console.error("Ошибка", (error as Error).message);
-    return undefined;
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
   }
 }
