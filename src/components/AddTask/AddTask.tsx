@@ -1,6 +1,5 @@
 import { postTask } from "@/api/api.js";
 import styles from "./AddTask.module.scss";
-import { useState } from "react";
 import { TaskStatus, LoadTask, Todo } from "@/models/todo";
 import { Form, Input, Button, Flex } from "antd";
 import { PageHeader } from "@ant-design/pro-components";
@@ -50,7 +49,7 @@ export default function AddTask({ loadTasks, taskFilter }: AddTaskProps) {
               required
             />
           </Form.Item>
-          <Button className={styles.Button_add} htmlType="submit">
+          <Button type="primary" htmlType="submit" style={{marginBottom:15}}>
             Add
           </Button>
         </Flex>

@@ -1,6 +1,7 @@
+import { Typography } from "antd";
 
 export default function ProfilePage() {
     return (
-        <div style={{ textAlign: 'center', marginTop:'40px', fontSize:'20px' }}>привет</div>
+        <Typography style={{ textAlign: 'center', marginTop:'40px', fontSize:'20px' }}>привет</Typography>
     )
 }

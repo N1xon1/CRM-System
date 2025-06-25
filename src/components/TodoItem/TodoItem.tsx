@@ -1,8 +1,9 @@
 import styles from "./TodoItem.module.scss";
 import { deleteTask, updateTask } from "@/api/api.js";
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { TaskStatus, Todo, LoadTask } from "@/models/todo";
-import { Form, Input, Button, Checkbox } from "antd";
+import { Form, Input, Button, Checkbox, List } from "antd";
+import {EditOutlined, DeleteOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons";
 
 type TodoItemProps = {
   task: Todo;
@@ -76,7 +77,7 @@ export default function TodoItem({
 
   return (
     <>
-      <li className={styles.task} key={task.id}>
+      <List.Item className={styles.task} key={task.id}>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <Form
             form={form}
@@ -116,6 +117,7 @@ export default function TodoItem({
               {isEdit ? (
                 <>
                   <Button className={styles.Button__save} htmlType="submit">
+                    <CheckOutlined />
                     Save
                   </Button>
                   <Button
@@ -123,6 +125,7 @@ export default function TodoItem({
                     onClick={handleBack}
                     htmlType="button"
                   >
+                    <CloseOutlined />
                     Back
                   </Button>
                 </>
@@ -131,6 +134,7 @@ export default function TodoItem({
                   className={styles.Button__rename}
                   onClick={handleRenameClick}
                 >
+                  <EditOutlined />
                   Rename
                 </Button>
               )}
@@ -139,12 +143,13 @@ export default function TodoItem({
                 htmlType="button"
                 onClick={() => handleDelete(task.id)}
               >
+                <DeleteOutlined />
                 Delete
               </Button>
             </div>
           </Form>
         </div>
-      </li>
+      </List.Item>
     </>
   );
 }

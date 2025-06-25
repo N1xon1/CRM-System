@@ -43,6 +43,6 @@ header {
 }
 
 .button_disabled {
-  @extend .button_add; // ✅ Теперь наследует все свойства
-  background-color: rgb(128, 128, 128); // Переопределяем нужное
+  @extend .button_add; // 
+  background-color: rgb(128, 128, 128);
 }
