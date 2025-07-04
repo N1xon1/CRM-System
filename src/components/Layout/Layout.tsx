@@ -13,7 +13,7 @@ export default function LayoutPage() {
             items={[
               {
                 key: "todo",
-                label: <Link to="/">Список задач</Link>,
+                label: <Link to="/app">Список задач</Link>,
               },
               {
                 key: "profile",

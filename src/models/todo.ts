@@ -1,21 +1,22 @@
-export interface Todo {
+interface Todo {
   id: number;
   title: string;
   created: string;
   isDone: boolean;
 }
-export interface TodoRequest {
+
+interface TodoRequest {
   title?: string;
   isDone?: boolean;
 }
 
-export interface TodoInfo {
+interface TodoInfo {
   all: number;
   completed: number;
   inWork: number;
 }
 
-export interface MetaResponse<T, N> {
+interface MetaResponse<T, N> {
   data: T[];
   info?: N;
   meta: {
@@ -23,6 +24,66 @@ export interface MetaResponse<T, N> {
   };
 }
 
-export type TaskStatus = "all" | "inWork" | "completed";
+interface UserRegistration {
+  login: string;
+  userName: string;
+  password: string;
+  email: string;
+  phoneNumber: string;
+}
 
-export type LoadTask = (taskFilter: TaskStatus) => Promise<void>;
+interface AuthData {
+  login: string;
+  password: string;
+}
+
+interface RefreshToken {
+  refreshToken: string;
+}
+
+interface Profile {
+  id: number;
+  userName: string;
+  email: string;
+  date: string;
+  isBlocked: boolean;
+  // roles: Role[];
+  phoneNumber: string;
+}
+
+interface ProfileRequest {
+  userName: string;
+  email: string;
+  phoneNumber: string;
+}
+
+interface PasswordRequest {
+  password: string;
+}
+
+interface Token {
+  accessToken: string;
+  refreshToken: string;
+}
+
+// type Role = ADMIN | USER | MODERATOR
+
+type TaskStatus = "all" | "inWork" | "completed";
+
+type LoadTask = (taskFilter: TaskStatus) => Promise<void>;
+
+export type {
+  Todo,
+  TodoRequest,
+  TodoInfo,
+  MetaResponse,
+  UserRegistration,
+  AuthData,
+  RefreshToken,
+  Profile,
+  ProfileRequest,
+  PasswordRequest,
+  Token,
+  TaskStatus,
+  LoadTask,
+};

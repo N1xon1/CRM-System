@@ -82,6 +82,7 @@ export default function TodoItem({
           <Form
             form={form}
             className={styles.task__form}
+            style={{paddingRight: 15, paddingLeft:15}}
             onFinish={(e) => handleEditSubmit(task.id, e)}
             noValidate
             initialValues={{ taskTitle: task.title }}

@@ -1,13 +1,17 @@
 import "./App.css";
 import TodoListPage from "./pages/TodoListPage/TodoListPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
-import { Route, Routes, Link } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import LayoutPage from "./components/Layout/Layout";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import RegisterPage from "./pages/RegisterPage/RegisterPage";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<LayoutPage />}>
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/app" element={<LayoutPage />}>
         <Route index element={<TodoListPage />} />
         <Route path="profile" element={<ProfilePage />} />
       </Route>
