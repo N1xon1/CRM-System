@@ -4,6 +4,9 @@ import {
   Todo,
   MetaResponse,
   UserRegistration,
+  RefreshToken,
+  ProfileRequest,
+  PasswordRequest,
 } from "@/models/todo";
 import axios, { AxiosError } from "axios";
 
@@ -73,17 +76,6 @@ export async function updateTask(
 }
 ///// Регистрация и авторизация
 
-// Обновления токена доступа пользователя
-export async function refreshAccessToken() {
-  try {
-    const res = await configApi.post(`/auth/signin`);
-  } catch (error) {
-    const axiosError = error as AxiosError;
-    console.error("Ошибка:", axiosError.message);
-    throw new AxiosError("Запрос не удался");
-  }
-}
-
 // Авторизация пользователя
 export async function loginUser(userData: { login: string; password: string }) {
   try {
@@ -114,6 +106,61 @@ export async function registerUser(userData: UserRegistration) {
         "Пользователь с такими данными уже существует. ЛОГИН И ПОЧТА ДОЛЖНЫ БЫТЬ УНИКАЛЬНЫМИ"
       );
     }
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Обновления токена доступа пользователя
+export async function refreshAccessToken(refreshToken:RefreshToken) {
+  try {
+    const res = await configApi.post(`/auth/signin`);
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Получить профиль пользователя  
+export async function getUserProfile() {
+  try {
+    const res = await configApi.get(`/user/profile`);
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Обновить профиль пользователь  
+export async function updateUserProfile(userData:ProfileRequest) {
+  try {
+    const res = await configApi.put(`/user/profile`);
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Изменение пароля
+export async function updateUserPassword(password:PasswordRequest) {
+  try {
+    const res = await configApi.post(`/user/profile/reset-password`);
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Выход пользователя из приложения 
+export async function logoutUser() {
+  try {
+    const res = await configApi.post(`/user/logout`);
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
     throw new AxiosError("Запрос не удался");
   }
 }
