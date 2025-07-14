@@ -194,11 +194,6 @@ configApi.interceptors.request.use((config) => {
   return config;
 });
 
-// const returnToken = () => {
-//   return useSelector((state: RootState) => state.user.accessToken);
-// };
-//  console.log(returnToken())
-
 configApi.interceptors.response.use(
   (config) => {
     return config;

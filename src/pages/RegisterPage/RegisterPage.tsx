@@ -24,19 +24,17 @@ export default function RegisterPage() {
         password,
         phoneNumber,
       });
-      console.log(userData);
       dispatch(setUser(userData)); // Диспатчим данные пользователя
       setIsRegistered(true);
     } catch (error) {
       alert(error);
     }
   }
-
+  
   const handleAuth = () => {
     navigate("/");
     setIsRegistered(false);
   };
-
   return isRegistered ? (
     <Flex
       align="center"

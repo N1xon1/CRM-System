@@ -7,9 +7,6 @@ import { getTokensUser, isAuthUser } from "@/store/slices/userSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 
-// const dispatch = useDispatch<AppDispatch>();
-// const getToken = (userData:Token) => dispatch(getTokensUser(userData));
-
 export default function LoginPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
@@ -26,9 +23,7 @@ export default function LoginPage() {
       const userData: Token = await loginUser({ login, password });
       localStorage.setItem("accessToken", userData.accessToken);
       localStorage.setItem("refToken", userData.refreshToken);
-      console.log(userData);
       dispatch(getTokensUser(userData));
-      // dispatch(isAuthUser(true))
       navigate("/app");
     } catch (error) {
       setLoading(false);
