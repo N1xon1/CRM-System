@@ -43,12 +43,12 @@ interface RefreshToken {
 
 interface Profile {
   id: number;
-  userName: string;
+  username: string;
   email: string;
   date: string;
   isBlocked: boolean;
   // roles: Role[];
-  phoneNumber: string;
+  phonenumber: string;
 }
 
 interface ProfileRequest {

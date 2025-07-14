@@ -1,5 +1,5 @@
 import { registerUser } from "@/api/api";
-import { UserRegistration } from "@/models/todo";
+import { Profile, UserRegistration } from "@/models/todo";
 import { Form, Button, Input, Flex, Typography } from "antd";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/store/slices/userSlice";
@@ -7,12 +7,10 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { AppDispatch } from "@/store/store";
 
-
 export default function RegisterPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { Title } = Typography;
-  // const [form] = Form.useForm();
 
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
 
@@ -36,7 +34,7 @@ export default function RegisterPage() {
 
   const handleAuth = () => {
     navigate("/");
-    setIsRegistered(false)
+    setIsRegistered(false);
   };
 
   return isRegistered ? (
@@ -44,7 +42,7 @@ export default function RegisterPage() {
       align="center"
       justify="center"
       vertical={true}
-      style={{ marginRight: 30, marginLeft: 30 ,fontSize: 18 }}
+      style={{ marginRight: 30, marginLeft: 30, fontSize: 18 }}
     >
       <Title level={1}>Регистрация прошла успешно!</Title>
       <Button

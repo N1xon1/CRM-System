@@ -5,8 +5,15 @@ import { Route, Routes } from "react-router-dom";
 import LayoutPage from "./components/Layout/Layout";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
+import { useDispatch, useSelector } from "react-redux";
+import { isAuthUser } from "./store/slices/userSlice";
+import { RootState } from "./store/store";
 
 function App() {
+  const dispatch = useDispatch();
+  dispatch(isAuthUser(!!localStorage.getItem("accessToken")));
+  const isAuth = useSelector((state: RootState) => state.user.isAuth);
+  console.log(isAuth);
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />

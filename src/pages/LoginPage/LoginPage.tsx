@@ -1,8 +1,14 @@
 import { loginUser } from "@/api/api";
-import { AuthData } from "@/models/todo";
-import { Form, Button, Input } from "antd";
+import { AuthData, Token } from "@/models/todo";
+import { Form, Button, Input, Flex } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getTokensUser, isAuthUser } from "@/store/slices/userSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+
+// const dispatch = useDispatch<AppDispatch>();
+// const getToken = (userData:Token) => dispatch(getTokensUser(userData));
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -11,13 +17,18 @@ export default function LoginPage() {
     navigate("/register");
   };
 
+  const dispatch = useDispatch<AppDispatch>();
+
   async function handleLogin(values: AuthData) {
     try {
       setLoading(true);
       const { login, password } = values;
-      const userData = await loginUser({ login, password });
+      const userData: Token = await loginUser({ login, password });
+      localStorage.setItem("accessToken", userData.accessToken);
+      localStorage.setItem("refToken", userData.refreshToken);
       console.log(userData);
-      // dispatch(setUser(userData));
+      dispatch(getTokensUser(userData));
+      // dispatch(isAuthUser(true))
       navigate("/app");
     } catch (error) {
       setLoading(false);
@@ -54,6 +65,7 @@ export default function LoginPage() {
       <Form.Item
         label="Password"
         name="password"
+        style={{ marginBottom: "0" }}
         rules={[
           {
             required: true,
@@ -65,8 +77,20 @@ export default function LoginPage() {
       >
         <Input.Password />
       </Form.Item>
+
+      <Flex justify="end">
+        <Button
+          type="link"
+          htmlType="button"
+          style={{ marginBottom: 20, marginRight: 20 }}
+          onClick={handleRegister}
+        >
+          Забыли пароль?
+        </Button>
+      </Flex>
+
       <Button
-        style={{ margin: "auto", width: 110 }}
+        style={{ margin: "auto", width: "90%", height: 40 }}
         htmlType="submit"
         loading={loading}
         type="primary"
@@ -76,7 +100,7 @@ export default function LoginPage() {
       <Button
         type="link"
         htmlType="button"
-        style={{ marginTop: 10 }}
+        style={{ marginTop: 15, marginBottom: 10 }}
         onClick={handleRegister}
       >
         Зарегистрироваться
@@ -84,3 +108,5 @@ export default function LoginPage() {
     </Form>
   );
 }
+
+// export {getToken};

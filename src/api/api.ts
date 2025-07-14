@@ -7,6 +7,8 @@ import {
   RefreshToken,
   ProfileRequest,
   PasswordRequest,
+  Profile,
+  Token,
 } from "@/models/todo";
 import axios, { AxiosError } from "axios";
 
@@ -74,16 +76,19 @@ export async function updateTask(
     throw new AxiosError("Запрос не удался");
   }
 }
+
 ///// Регистрация и авторизация
 
 // Авторизация пользователя
-export async function loginUser(userData: { login: string; password: string }) {
+export async function loginUser(userData: {
+  login: string;
+  password: string;
+}): Promise<Token> {
   try {
     const res = await configApi.post(`/auth/signin`, userData);
     return res.data;
-  } catch (error: any) {
+  } catch (error) {
     const axiosError = error as AxiosError;
-    console.error("Данные ошибки:", error.response.data);
     console.error("Ошибка:", axiosError.message);
     if (axiosError.response?.status === 401) {
       throw new Error("Вы ввели неверный логин или пароль");
@@ -93,12 +98,13 @@ export async function loginUser(userData: { login: string; password: string }) {
 }
 
 // Регистрация пользователя
-export async function registerUser(userData: UserRegistration) {
+export async function registerUser(
+  userData: UserRegistration
+): Promise<Profile> {
   try {
     const res = await configApi.post(`/auth/signup`, userData);
     return res.data;
-  } catch (error: any) {
-    console.error("Данные ошибки:", error.response.data);
+  } catch (error) {
     const axiosError = error as AxiosError;
     console.error("Ошибка:", axiosError.message);
     if (axiosError.response?.status === 409) {
@@ -111,9 +117,12 @@ export async function registerUser(userData: UserRegistration) {
 }
 
 // Обновления токена доступа пользователя
-export async function refreshAccessToken(refreshToken:RefreshToken) {
+export async function refreshAccessToken(
+  refreshToken: RefreshToken
+): Promise<Token> {
   try {
-    const res = await configApi.post(`/auth/signin`);
+    const res = await configApi.post(`/auth/refresh`, refreshToken);
+    return res.data;
   } catch (error) {
     const axiosError = error as AxiosError;
     console.error("Ошибка:", axiosError.message);
@@ -121,10 +130,11 @@ export async function refreshAccessToken(refreshToken:RefreshToken) {
   }
 }
 
-// Получить профиль пользователя  
-export async function getUserProfile() {
+// Получить данные для профиля пользователя
+export async function getUserProfile(): Promise<Profile> {
   try {
     const res = await configApi.get(`/user/profile`);
+    return res.data;
   } catch (error) {
     const axiosError = error as AxiosError;
     console.error("Ошибка:", axiosError.message);
@@ -132,10 +142,13 @@ export async function getUserProfile() {
   }
 }
 
-// Обновить профиль пользователь  
-export async function updateUserProfile(userData:ProfileRequest) {
+// Обновить профиль пользователь
+export async function updateUserProfile(
+  userData: ProfileRequest
+): Promise<void> {
   try {
-    const res = await configApi.put(`/user/profile`);
+    const res = await configApi.put(`/user/profile`, { userData });
+    return res.data;
   } catch (error) {
     const axiosError = error as AxiosError;
     console.error("Ошибка:", axiosError.message);
@@ -144,9 +157,14 @@ export async function updateUserProfile(userData:ProfileRequest) {
 }
 
 // Изменение пароля
-export async function updateUserPassword(password:PasswordRequest) {
+export async function updateUserPassword(
+  password: PasswordRequest
+): Promise<void> {
   try {
-    const res = await configApi.post(`/user/profile/reset-password`);
+    const res = await configApi.post(`/user/profile/reset-password`, {
+      password,
+    });
+    return res.data;
   } catch (error) {
     const axiosError = error as AxiosError;
     console.error("Ошибка:", axiosError.message);
@@ -154,13 +172,73 @@ export async function updateUserPassword(password:PasswordRequest) {
   }
 }
 
-// Выход пользователя из приложения 
-export async function logoutUser() {
+// Выход пользователя из приложения
+export async function logoutUser(): Promise<void> {
   try {
     const res = await configApi.post(`/user/logout`);
+    return res.data;
   } catch (error) {
     const axiosError = error as AxiosError;
     console.error("Ошибка:", axiosError.message);
     throw new AxiosError("Запрос не удался");
   }
 }
+
+configApi.interceptors.request.use((config) => {
+  if (!config.url?.endsWith("/auth/refresh")) {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
+// const returnToken = () => {
+//   return useSelector((state: RootState) => state.user.accessToken);
+// };
+//  console.log(returnToken())
+
+configApi.interceptors.response.use(
+  (config) => {
+    return config;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+    const refreshToken = localStorage.getItem("refToken");
+
+    if (
+      error.response?.status === 401 &&
+      originalRequest.url?.endsWith("/auth/refresh")
+    ) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refToken");
+      window.location.href = "/";
+      return Promise.reject(error);
+    }
+
+    if (!refreshToken) {
+      window.location.href = "/";
+      return Promise.reject(error);
+    }
+
+    if (
+      error.response.status === 401 &&
+      !originalRequest._isRetry &&
+      originalRequest
+    ) {
+      try {
+        originalRequest._isRetry = true;
+        const res: Token = await refreshAccessToken({ refreshToken });
+        originalRequest.headers.Authorization = `Bearer ${res.accessToken}`;
+        localStorage.setItem("accessToken", res.accessToken);
+        localStorage.setItem("refToken", res.refreshToken);
+        return configApi(originalRequest);
+        
+      } catch (error) {
+        console.log("Пользоваетль не авторизован", error);
+        return Promise.reject(error);
+      }
+    }
+  }
+);
