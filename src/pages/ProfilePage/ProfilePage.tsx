@@ -1,6 +1,7 @@
-import { getUserProfile } from "@/api/api";
+import { getUserProfile, logoutUser } from "@/api/api";
 import { Profile } from "@/models/todo";
-import { Form, Input} from "antd";
+import { tokenService } from "@/services/authToken";
+import { Form, Input, Button, Flex } from "antd";
 
 export default function ProfilePage() {
   const [form] = Form.useForm();
@@ -17,6 +18,17 @@ export default function ProfilePage() {
     }
   }
   getUserData();
+
+  async function handleExit() {
+    try {
+      tokenService.clear()
+      localStorage.removeItem("refToken");
+      window.location.href = "/";
+      await logoutUser();
+    } catch (error) {
+      alert(error);
+    }
+  }
   return (
     <Form form={form} style={{ width: "90%", margin: "auto" }}>
       <Form.Item
@@ -65,6 +77,15 @@ export default function ProfilePage() {
       >
         <Input name="phoneNumber" readOnly />
       </Form.Item>
+      <Flex justify="end">
+        <Button
+          htmlType="button"
+          style={{ backgroundColor: "#f44a4aff" }}
+          onClick={handleExit}
+        >
+          Выйти из приложения
+        </Button>
+      </Flex>
     </Form>
   );
 }

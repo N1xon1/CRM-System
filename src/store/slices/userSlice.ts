@@ -36,18 +36,11 @@ const userSliсe = createSlice({
       state.phonenumber = action.payload.phonenumber;
     },
 
-    getTokensUser(
-      state,
-      action: PayloadAction<{ refreshToken: string; accessToken: string }>
-    ) {
-      state.refreshToken = action.payload.refreshToken;
-      state.accessToken = action.payload.accessToken;
-    },
     isAuthUser(state, action:PayloadAction<boolean>) {
       state.isAuth = action.payload;
     },
   },
 });
 
-export const { setUser, getTokensUser, isAuthUser } = userSliсe.actions;
+export const { setUser, isAuthUser } = userSliсe.actions;
 export default userSliсe.reducer;

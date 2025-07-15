@@ -8,10 +8,11 @@ import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import { useDispatch, useSelector } from "react-redux";
 import { isAuthUser } from "./store/slices/userSlice";
 import { RootState } from "./store/store";
+import { tokenService } from "./services/authToken";
 
 function App() {
   const dispatch = useDispatch();
-  dispatch(isAuthUser(!!localStorage.getItem("accessToken")));
+  dispatch(isAuthUser(!!tokenService.get()));
   const isAuth = useSelector((state: RootState) => state.user.isAuth);
   console.log(isAuth);
   return (

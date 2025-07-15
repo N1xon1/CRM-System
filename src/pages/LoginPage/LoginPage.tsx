@@ -3,9 +3,9 @@ import { AuthData, Token } from "@/models/todo";
 import { Form, Button, Input, Flex } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getTokensUser, isAuthUser } from "@/store/slices/userSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
+import { tokenService } from "@/services/authToken";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -21,9 +21,8 @@ export default function LoginPage() {
       setLoading(true);
       const { login, password } = values;
       const userData: Token = await loginUser({ login, password });
-      localStorage.setItem("accessToken", userData.accessToken);
+      tokenService.set(userData.accessToken)
       localStorage.setItem("refToken", userData.refreshToken);
-      dispatch(getTokensUser(userData));
       navigate("/app");
     } catch (error) {
       setLoading(false);

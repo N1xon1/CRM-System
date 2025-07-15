@@ -10,6 +10,7 @@ import {
   Profile,
   Token,
 } from "@/models/todo";
+import { tokenService } from "@/services/authToken";
 import axios, { AxiosError } from "axios";
 
 // Конфигурация API
@@ -109,7 +110,7 @@ export async function registerUser(
     console.error("Ошибка:", axiosError.message);
     if (axiosError.response?.status === 409) {
       throw new Error(
-        "Пользователь с такими данными уже существует. ЛОГИН И ПОЧТА ДОЛЖНЫ БЫТЬ УНИКАЛЬНЫМИ"
+        "Пользователь с такими данными уже существует. ЛОГИН И ПОЧТА ДОЛЖНЫ БЫТЬ УНИКАЛЬНЫМИ. ЗАМЕНИТЕ ИХ"
       );
     }
     throw new AxiosError("Запрос не удался");
@@ -186,7 +187,7 @@ export async function logoutUser(): Promise<void> {
 
 configApi.interceptors.request.use((config) => {
   if (!config.url?.endsWith("/auth/refresh")) {
-    const token = localStorage.getItem("accessToken");
+    const token = tokenService.get()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -203,10 +204,17 @@ configApi.interceptors.response.use(
     const refreshToken = localStorage.getItem("refToken");
 
     if (
+      originalRequest.url?.endsWith("/auth/signup") ||
+      originalRequest.url?.endsWith("/auth/signin")
+    ) {
+      return Promise.reject(error); 
+    }
+
+    if (
       error.response?.status === 401 &&
       originalRequest.url?.endsWith("/auth/refresh")
     ) {
-      localStorage.removeItem("accessToken");
+      tokenService.clear()
       localStorage.removeItem("refToken");
       window.location.href = "/";
       return Promise.reject(error);
@@ -226,10 +234,9 @@ configApi.interceptors.response.use(
         originalRequest._isRetry = true;
         const res: Token = await refreshAccessToken({ refreshToken });
         originalRequest.headers.Authorization = `Bearer ${res.accessToken}`;
-        localStorage.setItem("accessToken", res.accessToken);
+        tokenService.set(res.accessToken)
         localStorage.setItem("refToken", res.refreshToken);
         return configApi(originalRequest);
-        
       } catch (error) {
         console.log("Пользоваетль не авторизован", error);
         return Promise.reject(error);
