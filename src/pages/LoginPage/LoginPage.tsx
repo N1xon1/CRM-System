@@ -4,8 +4,9 @@ import { Form, Button, Input, Flex } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, store } from "@/store/store";
 import { tokenService } from "@/services/authToken";
+import { isAuthUser } from "@/store/slices/userSlice";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -13,8 +14,6 @@ export default function LoginPage() {
   const handleRegister = () => {
     navigate("/register");
   };
-
-  const dispatch = useDispatch<AppDispatch>();
 
   async function handleLogin(values: AuthData) {
     try {
@@ -24,8 +23,10 @@ export default function LoginPage() {
       tokenService.set(userData.accessToken)
       localStorage.setItem("refToken", userData.refreshToken);
       navigate("/app");
+      store.dispatch(isAuthUser(true))
     } catch (error) {
       setLoading(false);
+      store.dispatch(isAuthUser(false))
       alert(error);
     }
   }

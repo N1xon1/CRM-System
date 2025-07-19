@@ -11,10 +11,6 @@ import { RootState } from "./store/store";
 import { tokenService } from "./services/authToken";
 
 function App() {
-  const dispatch = useDispatch();
-  dispatch(isAuthUser(!!tokenService.get()));
-  const isAuth = useSelector((state: RootState) => state.user.isAuth);
-  console.log(isAuth);
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />

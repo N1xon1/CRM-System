@@ -44,3 +44,8 @@ const userSliсe = createSlice({
 
 export const { setUser, isAuthUser } = userSliсe.actions;
 export default userSliсe.reducer;
+
+  // const dispatch = useDispatch();
+  // dispatch(isAuthUser(!!tokenService.get()));
+  // const isAuth = useSelector((state: RootState) => state.user.isAuth);
+  // console.log(isAuth);

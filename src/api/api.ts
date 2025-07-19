@@ -11,6 +11,8 @@ import {
   Token,
 } from "@/models/todo";
 import { tokenService } from "@/services/authToken";
+import { isAuthUser } from "@/store/slices/userSlice";
+import { store } from "@/store/store";
 import axios, { AxiosError } from "axios";
 
 // Конфигурация API
@@ -187,7 +189,7 @@ export async function logoutUser(): Promise<void> {
 
 configApi.interceptors.request.use((config) => {
   if (!config.url?.endsWith("/auth/refresh")) {
-    const token = tokenService.get()
+    const token = tokenService.get();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -205,23 +207,26 @@ configApi.interceptors.response.use(
 
     if (
       originalRequest.url?.endsWith("/auth/signup") ||
-      originalRequest.url?.endsWith("/auth/signin")
+      originalRequest.url?.endsWith("/auth/signin") ||
+      originalRequest.url?.endsWith("/user/logout")
     ) {
-      return Promise.reject(error); 
-    }
-
-    if (
-      error.response?.status === 401 &&
-      originalRequest.url?.endsWith("/auth/refresh")
-    ) {
-      tokenService.clear()
-      localStorage.removeItem("refToken");
-      window.location.href = "/";
       return Promise.reject(error);
     }
 
+    if (
+      (error.response?.status === 401 &&
+        originalRequest.url?.endsWith("/auth/refresh")) 
+    ) {
+      tokenService.clear();
+      localStorage.removeItem("refToken");
+      store.dispatch(isAuthUser(false));
+      // window.location.href = "/";
+    }
+
     if (!refreshToken) {
-      window.location.href = "/";
+      tokenService.clear();
+      store.dispatch(isAuthUser(false));
+      // window.location.href = "/login";
       return Promise.reject(error);
     }
 
@@ -234,13 +239,21 @@ configApi.interceptors.response.use(
         originalRequest._isRetry = true;
         const res: Token = await refreshAccessToken({ refreshToken });
         originalRequest.headers.Authorization = `Bearer ${res.accessToken}`;
-        tokenService.set(res.accessToken)
+        tokenService.set(res.accessToken);
         localStorage.setItem("refToken", res.refreshToken);
+        store.dispatch(isAuthUser(true));
+        console.log(store.getState().user.isAuth);
         return configApi(originalRequest);
       } catch (error) {
         console.log("Пользоваетль не авторизован", error);
-        return Promise.reject(error);
+        console.log(store.getState().user.isAuth);
+        store.dispatch(isAuthUser(false));
+        tokenService.clear();
       }
+    }
+    if (!store.getState().user.isAuth) {
+      window.location.href = "/";
+      return Promise.reject(error);
     }
   }
 );
