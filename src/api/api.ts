@@ -1,15 +1,12 @@
+import { TodoInfo, Todo, MetaResponse, TaskStatus } from "@/models/todo";
 import {
-  TodoInfo,
-  TaskStatus,
-  Todo,
-  MetaResponse,
   UserRegistration,
   RefreshToken,
   ProfileRequest,
   PasswordRequest,
   Profile,
   Token,
-} from "@/models/todo";
+} from "@/models/auth";
 import { tokenService } from "@/services/authToken";
 import { isAuthUser } from "@/store/slices/userSlice";
 import { store } from "@/store/store";
@@ -214,19 +211,18 @@ configApi.interceptors.response.use(
     }
 
     if (
-      (error.response?.status === 401 &&
-        originalRequest.url?.endsWith("/auth/refresh")) 
+      error.response?.status === 401 &&
+      originalRequest.url?.endsWith("/auth/refresh")
     ) {
       tokenService.clear();
       localStorage.removeItem("refToken");
       store.dispatch(isAuthUser(false));
-      // window.location.href = "/";
     }
 
     if (!refreshToken) {
       tokenService.clear();
       store.dispatch(isAuthUser(false));
-      // window.location.href = "/login";
+
       return Promise.reject(error);
     }
 
@@ -252,7 +248,7 @@ configApi.interceptors.response.use(
       }
     }
     if (!store.getState().user.isAuth) {
-      window.location.href = "/";
+      window.location.href = "/auth";
       return Promise.reject(error);
     }
   }

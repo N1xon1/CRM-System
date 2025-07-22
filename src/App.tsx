@@ -13,7 +13,7 @@ import { tokenService } from "./services/authToken";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/auth" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/app" element={<LayoutPage />}>
         <Route index element={<TodoListPage />} />

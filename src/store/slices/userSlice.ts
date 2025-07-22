@@ -1,7 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { act } from "react";
 
-const initialState = {
+interface UserState {
+  id: number | null;
+  username: string | null;
+  date: string | null;
+  email: string | null;
+  phonenumber: string | null;
+  refreshToken: string | null;
+  accessToken: string | null;
+  isAuth: boolean;
+  isBlocked: boolean | null;
+}
+
+const initialState:UserState = {
   id: null as number | null,
   username: null as string | null,
   date: null as string | null,
@@ -44,8 +56,3 @@ const userSliсe = createSlice({
 
 export const { setUser, isAuthUser } = userSliсe.actions;
 export default userSliсe.reducer;
-
-  // const dispatch = useDispatch();
-  // dispatch(isAuthUser(!!tokenService.get()));
-  // const isAuth = useSelector((state: RootState) => state.user.isAuth);
-  // console.log(isAuth);

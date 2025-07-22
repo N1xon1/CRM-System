@@ -1,5 +1,5 @@
 import { registerUser } from "@/api/api";
-import { Profile, UserRegistration } from "@/models/todo";
+import { UserRegistration, ValidationConstraints } from "@/models/auth";
 import { Form, Button, Input, Flex, Typography } from "antd";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/store/slices/userSlice";
@@ -65,8 +65,8 @@ export default function RegisterPage() {
           boxShadow: "none",
           margin: 10,
         }}
-        onClick={() => window.location.href = "/"}
-      > 
+        onClick={() => (window.location.href = "/auth")}
+      >
         <LeftCircleOutlined style={{ fontSize: 32 }} />
       </Button>
       <Form<UserRegistration>
@@ -87,8 +87,14 @@ export default function RegisterPage() {
               required: true,
               message: "Имя пользователя не может быть пустым",
             },
-            { min: 1, message: "Минимум 1 символов!" },
-            { max: 60, message: "Максимум 60 символов!" },
+            {
+              min: ValidationConstraints.UserNameMinLength,
+              message: `Минимум ${ValidationConstraints.UserNameMinLength} символов!`,
+            },
+            {
+              max: ValidationConstraints.MaxLenght,
+              message: `Максимум ${ValidationConstraints.MaxLenght} символов!`,
+            },
             {
               pattern: /^[a-zA-Zа-яА-ЯёЁ]+$/,
               message: "Только буквы (русские или латинские)",
@@ -106,8 +112,14 @@ export default function RegisterPage() {
               required: true,
               message: "Логин не может быть пустым",
             },
-            { min: 2, message: "Минимум 2 символов!" },
-            { max: 60, message: "Максимум 60 символов!" },
+            {
+              min: ValidationConstraints.LoginMinLength,
+              message: `Минимум ${ValidationConstraints.LoginMinLength} символов!`,
+            },
+            {
+              max: ValidationConstraints.MaxLenght,
+              message: `Максимум ${ValidationConstraints.MaxLenght} символов!`,
+            },
             {
               pattern: /^[a-zA-Z]+$/,
               message: "Только латинские буквы (A-Z, a-z)",
@@ -124,15 +136,21 @@ export default function RegisterPage() {
               required: true,
               message: "Пароль не может быть пустым",
             },
-            { min: 6, message: "Минимум 6 символов!" },
-            { max: 60, message: "Максимум 60 символов!" },
+            {
+              min: ValidationConstraints.PasswordMinLength,
+              message: `Минимум ${ValidationConstraints.PasswordMinLength} символов!`,
+            },
+            {
+              max: ValidationConstraints.MaxLenght,
+              message: `Максимум ${ValidationConstraints.MaxLenght} символов!`,
+            },
           ]}
         >
           <Input.Password name="password" />
         </Form.Item>
         <Form.Item
           label="repeat password"
-          name="Repeat password"
+          name="repeatPassword"
           rules={[
             {
               required: true,
@@ -146,11 +164,17 @@ export default function RegisterPage() {
                 return Promise.reject(new Error("Пароли не совпадают!"));
               },
             }),
-            { min: 6, message: "Минимум 6 символов!" },
-            { max: 60, message: "Максимум 60 символов!" },
+            {
+              min: ValidationConstraints.PasswordMinLength,
+              message: `Минимум ${ValidationConstraints.PasswordMinLength} символов!`,
+            },
+            {
+              max: ValidationConstraints.MaxLenght,
+              message: `Максимум ${ValidationConstraints.MaxLenght} символов!`,
+            },
           ]}
         >
-          <Input.Password name="Repeat password" />
+          <Input.Password name="repeatPassword" />
         </Form.Item>
 
         <Form.Item

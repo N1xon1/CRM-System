@@ -1,5 +1,5 @@
 import { getUserProfile, logoutUser } from "@/api/api";
-import { Profile } from "@/models/todo";
+import { Profile } from "@/models/auth";
 import { tokenService } from "@/services/authToken";
 import { Form, Input, Button, Flex } from "antd";
 
@@ -23,7 +23,7 @@ export default function ProfilePage() {
     try {
       tokenService.clear()
       localStorage.removeItem("refToken");
-      window.location.href = "/";
+      window.location.href = "/auth";
       await logoutUser();
     } catch (error) {
       alert(error);

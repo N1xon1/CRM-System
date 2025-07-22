@@ -1,10 +1,9 @@
 import { loginUser } from "@/api/api";
-import { AuthData, Token } from "@/models/todo";
+import { AuthData, Token, ValidationConstraints } from "@/models/auth";
 import { Form, Button, Input, Flex } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { AppDispatch, store } from "@/store/store";
+import { store } from "@/store/store";
 import { tokenService } from "@/services/authToken";
 import { isAuthUser } from "@/store/slices/userSlice";
 
@@ -18,15 +17,14 @@ export default function LoginPage() {
   async function handleLogin(values: AuthData) {
     try {
       setLoading(true);
-      const { login, password } = values;
-      const userData: Token = await loginUser({ login, password });
-      tokenService.set(userData.accessToken)
+      const userData: Token = await loginUser(values);
+      tokenService.set(userData.accessToken);
       localStorage.setItem("refToken", userData.refreshToken);
       navigate("/app");
-      store.dispatch(isAuthUser(true))
+      store.dispatch(isAuthUser(true));
     } catch (error) {
       setLoading(false);
-      store.dispatch(isAuthUser(false))
+      store.dispatch(isAuthUser(false));
       alert(error);
     }
   }
@@ -50,8 +48,14 @@ export default function LoginPage() {
             required: true,
             message: "Имя пользователя не может быть пустым",
           },
-          { min: 1, message: "Минимум 1 символов!" },
-          { max: 60, message: "Максимум 60 символов!" },
+          {
+            min: ValidationConstraints.LoginMinLength,
+            message: `Минимум ${ValidationConstraints.LoginMinLength} символов!`,
+          },
+          {
+            max: ValidationConstraints.MaxLenght,
+            message: `Максимум ${ValidationConstraints.MaxLenght} символов!`,
+          },
         ]}
         style={{ marginTop: 50 }}
       >
@@ -66,8 +70,14 @@ export default function LoginPage() {
             required: true,
             message: "Пароль не может быть пустым",
           },
-          { min: 6, message: "Минимум 6 символов!" },
-          { max: 60, message: "Максимум 60 символов!" },
+          {
+            min: ValidationConstraints.PasswordMinLength,
+            message: `Минимум ${ValidationConstraints.PasswordMinLength} символов!`,
+          },
+          {
+            max: ValidationConstraints.MaxLenght,
+            message: `Максимум ${ValidationConstraints.MaxLenght} символов!`,
+          },
         ]}
       >
         <Input.Password />
