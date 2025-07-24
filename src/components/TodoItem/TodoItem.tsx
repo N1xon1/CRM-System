@@ -77,8 +77,8 @@ export default function TodoItem({
 
   return (
     <>
-      <List.Item className={styles.task} key={task.id}>
-        <div style={{ display: "flex", flexDirection: "column" }}>
+      <List.Item className={styles.task} key={task.id} style={{}}>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent:"space-between" }}>
           <Form
             form={form}
             className={styles.task__form}

@@ -37,6 +37,8 @@ export default function LoginPage() {
         flexDirection: "column",
         maxWidth: 600,
         maxHeight: 300,
+        margin: "auto",
+        backgroundColor: "white",
       }}
       onFinish={handleLogin}
     >

@@ -197,7 +197,7 @@ export default function RegisterPage() {
           rules={[
             {
               required: false,
-              pattern: /^\d{11}$/,
+              pattern: /^\+?\d{11}$/,
               message:
                 "Пожалуйста, введите номер верно. Пример (8-999-999-99-99)",
             },

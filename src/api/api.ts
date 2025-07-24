@@ -1,4 +1,5 @@
 import { TodoInfo, Todo, MetaResponse, TaskStatus } from "@/models/todo";
+import MetaResponseAdmin, { User, UserRequest } from "@/models/admin";
 import {
   UserRegistration,
   RefreshToken,
@@ -184,6 +185,55 @@ export async function logoutUser(): Promise<void> {
   }
 }
 
+// Админка
+
+// Получить всех пользователей
+export async function getUsers(): Promise<MetaResponseAdmin<User>> {
+  try {
+    const res = await configApi.get(`/admin/users`);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Получить данные профиля пользователя
+export async function getAdminUserProfile(id: number): Promise<User> {
+  try {
+    const res = await configApi.get(`/admin/users/${id}`);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Обновить профиль пользователя
+export async function updateProfileUser(
+  id: number,
+  userData: UserRequest
+): Promise<User> {
+  try {
+    const res = await configApi.put(`/admin/users/${id}`, userData);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Удалить пользователя
+
+// Заблокировать пользователя
+
+// Обновление прав пользователя
+
+// Разблокировать пользователя
+
 configApi.interceptors.request.use((config) => {
   if (!config.url?.endsWith("/auth/refresh")) {
     const token = tokenService.get();
@@ -238,11 +288,9 @@ configApi.interceptors.response.use(
         tokenService.set(res.accessToken);
         localStorage.setItem("refToken", res.refreshToken);
         store.dispatch(isAuthUser(true));
-        console.log(store.getState().user.isAuth);
         return configApi(originalRequest);
       } catch (error) {
         console.log("Пользоваетль не авторизован", error);
-        console.log(store.getState().user.isAuth);
         store.dispatch(isAuthUser(false));
         tokenService.clear();
       }

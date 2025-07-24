@@ -1,3 +1,4 @@
+import { Roles, User } from "@/models/admin";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { act } from "react";
 
@@ -11,44 +12,37 @@ interface UserState {
   accessToken: string | null;
   isAuth: boolean;
   isBlocked: boolean | null;
+  roles: Roles[] | null;
 }
 
-const initialState:UserState = {
-  id: null as number | null,
-  username: null as string | null,
-  date: null as string | null,
-  email: null as string | null,
-  phonenumber: null as string | null,
-  refreshToken: null as string | null,
-  accessToken: null as string | null,
+const initialState: UserState = {
+  id: null,
+  username: null,
+  date: null,
+  email: null,
+  phonenumber: null,
+  refreshToken: null,
+  accessToken: null,
   isAuth: false,
-  isBlocked: null as boolean | null,
+  roles: null,
+  isBlocked: null,
 };
 
 const userSliсe = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser( 
-      state,
-      action: PayloadAction<{
-        id: number;
-        username: string;
-        email: string;
-        date: string;
-        isBlocked: boolean;
-        phonenumber: string;
-      }>
-    ) {
+    setUser(state, action: PayloadAction<User>) {
       state.id = action.payload.id;
       state.username = action.payload.username;
       state.date = action.payload.date;
       state.email = action.payload.email;
       state.isBlocked = action.payload.isBlocked;
-      state.phonenumber = action.payload.phonenumber;
+      state.roles = action.payload.roles;
+      state.phonenumber = action.payload.phoneNumber;
     },
 
-    isAuthUser(state, action:PayloadAction<boolean>) {
+    isAuthUser(state, action: PayloadAction<boolean>) {
       state.isAuth = action.payload;
     },
   },

@@ -7,11 +7,9 @@ import App from "./App.js";
 import { store } from "./store/store.js";
 
 createRoot(document.getElementById("root")).render(
-  // <StrictMode>
-    <BrowserRouter>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </BrowserRouter>
-  // </StrictMode>
+  <BrowserRouter>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </BrowserRouter>
 );
