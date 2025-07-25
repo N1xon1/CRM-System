@@ -1,6 +1,6 @@
 import { postTask } from "@/api/api.js";
 import styles from "./AddTask.module.scss";
-import { TaskStatus, LoadTask, Todo, RefreshToken } from "@/models/todo";
+import { TaskStatus, LoadTask, Todo} from "@/models/todo";
 import { Form, Input, Button, Flex } from "antd";
 import { PageHeader } from "@ant-design/pro-components";
 
@@ -30,7 +30,7 @@ export default function AddTask({ loadTasks, taskFilter }: AddTaskProps) {
     <PageHeader>
       {/* Форма добавления задачи */}
       <Form form={form} onFinish={handleSubmit} noValidate>
-        <Flex justify="space-between" align="center">
+        <Flex justify='start' gap={20} align="center">
           <Form.Item
             name="taskTitle"
             rules={[
@@ -43,6 +43,7 @@ export default function AddTask({ loadTasks, taskFilter }: AddTaskProps) {
             ]}
           >
             <Input
+            style={{minWidth:800}}
               className={styles.task_name}
               id="name"
               placeholder="Task To Be Done..."

@@ -33,7 +33,7 @@ export default function UserManagement() {
   }
   async function handleSave(id: number, userData: UserRequest) {
     try {
-      const data = await updateProfileUser(id, userData);
+      await updateProfileUser(id, userData);
       setIsActivBtn(false);
     } catch (error) {
       alert(error);

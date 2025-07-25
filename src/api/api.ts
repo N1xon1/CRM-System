@@ -3,6 +3,7 @@ import MetaResponseAdmin, {
   User,
   UserFilters,
   UserRequest,
+  UserRolesRequest,
 } from "@/models/admin";
 import {
   UserRegistration,
@@ -16,6 +17,7 @@ import { tokenService } from "@/services/authToken";
 import { isAuthUser } from "@/store/slices/userSlice";
 import { store } from "@/store/store";
 import axios, { AxiosError } from "axios";
+import { data } from "react-router-dom";
 
 // Конфигурация API
 const configApi = axios.create({
@@ -246,10 +248,43 @@ export async function deleteUser(id: number) {
   }
 }
 // Заблокировать пользователя
-
-// Обновление прав пользователя
+export async function blockUser(id: number): Promise<User> {
+  try {
+    const res = await configApi.post(`/admin/users/${id}/block`);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
 
 // Разблокировать пользователя
+export async function unblockUser(id: number): Promise<User> {
+  try {
+    const res = await configApi.post(`/admin/users/${id}/unblock`);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Обновление прав пользователя
+export async function updateRolesUser(
+  id: number,
+  userRoles: UserRolesRequest
+): Promise<User> {
+  try {
+    const res = await configApi.post(`/admin/users/${id}/rights`, userRoles);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
 
 configApi.interceptors.request.use((config) => {
   if (!config.url?.endsWith("/auth/refresh")) {

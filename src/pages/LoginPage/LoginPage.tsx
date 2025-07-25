@@ -29,90 +29,92 @@ export default function LoginPage() {
     }
   }
   return (
-    <Form<AuthData>
-      labelCol={{ span: 6 }}
-      wrapperCol={{ span: 16 }}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        maxWidth: 600,
-        maxHeight: 300,
-        margin: "auto",
-        backgroundColor: "white",
-      }}
-      onFinish={handleLogin}
-    >
-      <Form.Item
-        label="Login"
-        name="login"
-        rules={[
-          {
-            required: true,
-            message: "Имя пользователя не может быть пустым",
-          },
-          {
-            min: ValidationConstraints.LoginMinLength,
-            message: `Минимум ${ValidationConstraints.LoginMinLength} символов!`,
-          },
-          {
-            max: ValidationConstraints.MaxLenght,
-            message: `Максимум ${ValidationConstraints.MaxLenght} символов!`,
-          },
-        ]}
-        style={{ marginTop: 50 }}
+    <Flex align="center" justify="center" style={{ height: "100vh" }}>
+      <Form<AuthData>
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 16 }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          padding: 20,
+          margin: "auto",
+          minWidth: 600,
+          backgroundColor: "silver",
+        }}
+        onFinish={handleLogin}
       >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        label="Password"
-        name="password"
-        style={{ marginBottom: "0" }}
-        rules={[
-          {
-            required: true,
-            message: "Пароль не может быть пустым",
-          },
-          {
-            min: ValidationConstraints.PasswordMinLength,
-            message: `Минимум ${ValidationConstraints.PasswordMinLength} символов!`,
-          },
-          {
-            max: ValidationConstraints.MaxLenght,
-            message: `Максимум ${ValidationConstraints.MaxLenght} символов!`,
-          },
-        ]}
-      >
-        <Input.Password />
-      </Form.Item>
+        <Form.Item
+          label="Login"
+          name="login"
+          rules={[
+            {
+              required: true,
+              message: "Имя пользователя не может быть пустым",
+            },
+            {
+              min: ValidationConstraints.LoginMinLength,
+              message: `Минимум ${ValidationConstraints.LoginMinLength} символов!`,
+            },
+            {
+              max: ValidationConstraints.MaxLenght,
+              message: `Максимум ${ValidationConstraints.MaxLenght} символов!`,
+            },
+          ]}
+          style={{ marginTop: 50 }}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Password"
+          name="password"
+          style={{ marginBottom: "0" }}
+          rules={[
+            {
+              required: true,
+              message: "Пароль не может быть пустым",
+            },
+            {
+              min: ValidationConstraints.PasswordMinLength,
+              message: `Минимум ${ValidationConstraints.PasswordMinLength} символов!`,
+            },
+            {
+              max: ValidationConstraints.MaxLenght,
+              message: `Максимум ${ValidationConstraints.MaxLenght} символов!`,
+            },
+          ]}
+        >
+          <Input.Password />
+        </Form.Item>
 
-      <Flex justify="end">
+        <Flex justify="end">
+          <Button
+            type="link"
+            htmlType="button"
+            style={{ marginBottom: 20, marginRight: 20 }}
+            onClick={handleRegister}
+          >
+            Забыли пароль?
+          </Button>
+        </Flex>
+
+        <Button
+          style={{ margin: "auto", width: "90%", height: 40 }}
+          htmlType="submit"
+          loading={loading}
+          type="primary"
+        >
+          Войти
+        </Button>
         <Button
           type="link"
           htmlType="button"
-          style={{ marginBottom: 20, marginRight: 20 }}
+          style={{ marginTop: 15, marginBottom: 10 }}
           onClick={handleRegister}
         >
-          Забыли пароль?
+          Зарегистрироваться
         </Button>
-      </Flex>
-
-      <Button
-        style={{ margin: "auto", width: "90%", height: 40 }}
-        htmlType="submit"
-        loading={loading}
-        type="primary"
-      >
-        Войти
-      </Button>
-      <Button
-        type="link"
-        htmlType="button"
-        style={{ marginTop: 15, marginBottom: 10 }}
-        onClick={handleRegister}
-      >
-        Зарегистрироваться
-      </Button>
-    </Form>
+      </Form>
+    </Flex>
   );
 }
 
