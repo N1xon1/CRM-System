@@ -45,7 +45,7 @@ export default function LayoutPage() {
         />
       </Sider>
       <Layout>
-        <Content style={{ background: "#f5f5f5", width: 890 }}>
+        <Content style={{ background: "#f5f5f5", width: "100%" }}>
           <Outlet />
         </Content>
       </Layout>

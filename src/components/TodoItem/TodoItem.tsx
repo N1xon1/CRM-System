@@ -1,9 +1,14 @@
 import styles from "./TodoItem.module.scss";
 import { deleteTask, updateTask } from "@/api/api.js";
-import { useState} from "react";
+import { useState } from "react";
 import { TaskStatus, Todo, LoadTask } from "@/models/todo";
 import { Form, Input, Button, Checkbox, List } from "antd";
-import {EditOutlined, DeleteOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 
 type TodoItemProps = {
   task: Todo;
@@ -18,10 +23,10 @@ export default function TodoItem({
 }: TodoItemProps) {
   // Состояния для управления редактированием задачи
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  
+
   // валидация
   const [form] = Form.useForm();
-  
+
   // Функция удаления задачи
   async function handleDelete(id: number) {
     try {
@@ -78,11 +83,17 @@ export default function TodoItem({
   return (
     <>
       <List.Item className={styles.task} key={task.id} style={{}}>
-        <div style={{ display: "flex", flexDirection: "column", justifyContent:"space-between" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
           <Form
             form={form}
             className={styles.task__form}
-            style={{paddingRight: 15, paddingLeft:15}}
+            style={{ paddingRight: 15, paddingLeft: 15 }}
             onFinish={(e) => handleEditSubmit(task.id, e)}
             noValidate
             initialValues={{ taskTitle: task.title }}

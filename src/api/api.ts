@@ -1,5 +1,9 @@
 import { TodoInfo, Todo, MetaResponse, TaskStatus } from "@/models/todo";
-import MetaResponseAdmin, { User, UserRequest } from "@/models/admin";
+import MetaResponseAdmin, {
+  User,
+  UserFilters,
+  UserRequest,
+} from "@/models/admin";
 import {
   UserRegistration,
   RefreshToken,
@@ -188,9 +192,13 @@ export async function logoutUser(): Promise<void> {
 // Админка
 
 // Получить всех пользователей
-export async function getUsers(): Promise<MetaResponseAdmin<User>> {
+export async function getUsers(
+  userFilters: UserFilters
+): Promise<MetaResponseAdmin<User>> {
   try {
-    const res = await configApi.get(`/admin/users`);
+    const res = await configApi.get(`/admin/users`, {
+      params: userFilters,
+    });
     return res.data;
   } catch (error) {
     const axiosError = error as AxiosError;
@@ -227,7 +235,16 @@ export async function updateProfileUser(
 }
 
 // Удалить пользователя
-
+export async function deleteUser(id: number) {
+  try {
+    const res = await configApi.delete(`/admin/users/${id}`);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
 // Заблокировать пользователя
 
 // Обновление прав пользователя

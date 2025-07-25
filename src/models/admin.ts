@@ -1,6 +1,5 @@
-
 // Интерфейс запроса для фильтрации и сортировки пользователей
-interface UserFilters {
+export interface UserFilters {
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";

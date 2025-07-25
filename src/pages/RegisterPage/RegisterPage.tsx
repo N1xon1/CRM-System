@@ -12,7 +12,6 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { Title } = Typography;
-
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
 
   async function handleRegister(values: UserRegistration) {
@@ -42,7 +41,12 @@ export default function RegisterPage() {
       align="center"
       justify="center"
       vertical={true}
-      style={{ marginRight: 30, marginLeft: 30, fontSize: 18 }}
+      style={{
+        marginRight: 30,
+        marginLeft: 30,
+        fontSize: 18,
+        backgroundColor: "white",
+      }}
     >
       <Title level={1}>Регистрация прошла успешно!</Title>
       <Button
@@ -56,19 +60,6 @@ export default function RegisterPage() {
     </Flex>
   ) : (
     <>
-      <Button
-        htmlType="button"
-        style={{
-          width: "8%",
-          background: "transparent",
-          border: "none",
-          boxShadow: "none",
-          margin: 10,
-        }}
-        onClick={() => (window.location.href = "/auth")}
-      >
-        <LeftCircleOutlined style={{ fontSize: 32 }} />
-      </Button>
       <Form<UserRegistration>
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 16 }}
@@ -76,9 +67,25 @@ export default function RegisterPage() {
           display: "flex",
           flexDirection: "column",
           maxWidth: 600,
+          backgroundColor: "white",
+          margin: "auto",
+          // height:400
         }}
         onFinish={handleRegister}
       >
+        <Button
+          htmlType="button"
+          style={{
+            width: "8%",
+            background: "transparent",
+            border: "none",
+            boxShadow: "none",
+            margin: 10,
+          }}
+          onClick={() => (window.location.href = "/auth")}
+        >
+          <LeftCircleOutlined style={{ fontSize: 32 }} />
+        </Button>
         <Form.Item
           label="userName"
           name="userName"
