@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export default function LayoutPage() {
   const { Sider, Content } = Layout;
   const location = useLocation();
-  const [selectedKeys, setSelectedKeys] = useState(["todo"]);
+  const [selectedKeys, setSelectedKeys] = useState<[string]>(["todo"]);
 
   useEffect(() => {
     const path = location.pathname;
