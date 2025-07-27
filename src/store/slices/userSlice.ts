@@ -1,6 +1,5 @@
 import { Roles, User } from "@/models/admin";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { act } from "react";
 
 interface UserState {
   id: number | null;
@@ -32,14 +31,29 @@ const userSliсe = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser(state, action: PayloadAction<User>) {
-      state.id = action.payload.id;
-      state.username = action.payload.username;
-      state.date = action.payload.date;
-      state.email = action.payload.email;
-      state.isBlocked = action.payload.isBlocked;
-      state.roles = action.payload.roles;
-      state.phonenumber = action.payload.phoneNumber;
+    setUser(
+      state,
+      action: PayloadAction<
+        Partial<{
+          id: number;
+          username: string;
+          email: string;
+          date: string;
+          isBlocked: boolean;
+          phonenumber: string;
+        }>
+      >
+    ) {
+      if (action.payload.id !== undefined) state.id = action.payload.id;
+      if (action.payload.username !== undefined)
+        state.username = action.payload.username;
+      if (action.payload.email !== undefined)
+        state.email = action.payload.email;
+      if (action.payload.date !== undefined) state.date = action.payload.date;
+      if (action.payload.isBlocked !== undefined)
+        state.isBlocked = action.payload.isBlocked;
+      if (action.payload.phonenumber !== undefined)
+        state.phonenumber = action.payload.phonenumber;
     },
 
     isAuthUser(state, action: PayloadAction<boolean>) {
