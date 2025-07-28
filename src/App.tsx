@@ -11,7 +11,7 @@ import UserManagement from "./pages/UserManagementPage/UserManagementPage";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/app" replace />} />
+      <Route path="/" element={<Navigate to="/auth" replace />} />
       <Route path="/auth" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/management" element={<UserManagement/>}></Route>

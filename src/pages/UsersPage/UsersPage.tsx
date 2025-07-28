@@ -5,35 +5,60 @@ import {
   unblockUser,
   updateRolesUser,
 } from "@/api/api";
-import { Roles, User, UserFilters, UserRolesRequest } from "@/models/admin";
+import { Roles, User, UserFilters } from "@/models/admin";
 import {
   CaretDownOutlined,
   CaretUpOutlined,
   EllipsisOutlined,
 } from "@ant-design/icons";
-import { Table, Tag, Button, Input, Flex, Modal, Form, Checkbox } from "antd";
+import {
+  Table,
+  Tag,
+  Button,
+  Input,
+  Flex,
+  Modal,
+  Form,
+  Checkbox,
+  Radio,
+  Pagination,
+} from "antd";
+import { RadioChangeEvent } from "antd/lib";
 import { useEffect, useState } from "react";
 
 export default function UsersPage() {
   const [data, setData] = useState<User[]>([]);
-  const [userFilters, setUserFilters] = useState<UserFilters>({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userFilters, setUserFilters] = useState<UserFilters>({ limit: 20 });
+  const [isModalOpenRoles, setIsModalOpenRoles] = useState<boolean>(false);
+  const [isModalOpenFilter, setIsModalOpenFilter] = useState<boolean>(false);
   const [userRoles, setUserRoles] = useState<Roles[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
-  
+  const [blockFilter, setBlockFilter] = useState<boolean | undefined>(
+    undefined
+  );
+  const [countUsers, setCountUsers] = useState<number>(0);
+  const [pagination, setPagination] = useState<{
+    limit: number;
+    offset: number;
+  }>({
+    limit: 20,
+    offset: 0,
+  });
+
   const { Search } = Input;
 
   const fetchData = async (userFilters: UserFilters) => {
     try {
       const res = await getUsers(userFilters);
       setData(res.data ? formatUserData(res.data) : []);
+      setCountUsers(res.meta.totalAmount);
     } catch (error) {
       alert(error);
     }
   };
 
-  const formatUserData = (users: User[]) => 
-    users.map(user => ({
+  const formatUserData = (users: User[]) =>
+    users.map((user) => ({
       ...user,
       key: user.id,
       date: new Date(user.date).toLocaleDateString(),
@@ -67,9 +92,9 @@ export default function UsersPage() {
   };
 
   const handleSortChange = (sortBy: string) => {
-    const isActiveAndAsc = 
+    const isActiveAndAsc =
       userFilters.sortBy === sortBy && userFilters.sortOrder === "asc";
-    const newSort:UserFilters = {
+    const newSort: UserFilters = {
       ...userFilters,
       sortBy,
       sortOrder: isActiveAndAsc ? "desc" : "asc",
@@ -92,14 +117,12 @@ export default function UsersPage() {
   const handleClickUserRoles = (roles: Roles[], id: number) => {
     setUserRoles(roles);
     setUserId(id);
-    setIsModalOpen(true);
+    setIsModalOpenRoles(true);
   };
 
   const handleChangeRoles = (role: Roles) => {
-    setUserRoles(prev => 
-      prev.includes(role) 
-        ? prev.filter(r => r !== role) 
-        : [...prev, role]
+    setUserRoles((prev) =>
+      prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role]
     );
   };
 
@@ -111,7 +134,7 @@ export default function UsersPage() {
 
     try {
       await updateRolesUser(id, { roles });
-      setIsModalOpen(false);
+      setIsModalOpenRoles(false);
       fetchData(userFilters);
     } catch (error) {
       alert(error);
@@ -119,7 +142,8 @@ export default function UsersPage() {
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    setIsModalOpenRoles(false);
+    setIsModalOpenFilter(false);
     setUserId(null);
   };
 
@@ -136,9 +160,7 @@ export default function UsersPage() {
       dataIndex: "isBlocked",
       key: "isBlocked",
       render: (isBlocked: boolean) => (
-        <Tag color={isBlocked ? "red" : "green"}>
-          {isBlocked ? "+" : "-"}
-        </Tag>
+        <Tag color={isBlocked ? "red" : "green"}>{isBlocked ? "+" : "-"}</Tag>
       ),
     },
     {
@@ -147,7 +169,7 @@ export default function UsersPage() {
       key: "roles",
       render: (roles: Roles[]) => (
         <span>
-          {roles.map(role => (
+          {roles.map((role) => (
             <Tag key={role} color="blue" style={{ margin: 2 }}>
               {role}
             </Tag>
@@ -178,7 +200,11 @@ export default function UsersPage() {
       key: "actions",
       render: (_: any, record: User) => (
         <Button
-          style={{ whiteSpace: "normal", height: "30px", backgroundColor: "red" }}
+          style={{
+            whiteSpace: "normal",
+            height: "30px",
+            backgroundColor: "red",
+          }}
           onClick={() => handleDelete(record.id)}
         >
           Удалить
@@ -222,10 +248,7 @@ export default function UsersPage() {
       title: (
         <Flex align="center" gap="small">
           <span>{title}</span>
-          <Button
-            size="small"
-            onClick={() => handleSortChange(sortKey)}
-          >
+          <Button size="small" onClick={() => handleSortChange(sortKey)}>
             {userFilters.sortOrder === "asc" ? (
               <CaretUpOutlined />
             ) : (
@@ -239,6 +262,22 @@ export default function UsersPage() {
     };
   }
 
+  function handleChangeBlockFilter(isBlocked: boolean | undefined) {
+    const newBlockFilter: UserFilters = { ...userFilters, isBlocked };
+    setUserFilters(newBlockFilter);
+    setIsModalOpenFilter(false);
+    fetchData(newBlockFilter);
+  }
+
+  function handleChangePagination(current: number) {
+    const newPaginationFilter: UserFilters = {
+      ...userFilters,
+      offset: current - 1,
+    };
+    setPagination({ ...pagination, offset: current - 1 });
+    setUserFilters(newPaginationFilter);
+  }
+
   return (
     <>
       <Search
@@ -247,21 +286,60 @@ export default function UsersPage() {
         enterButton
         style={{ marginTop: 20 }}
       />
-
+      <Button onClick={() => setIsModalOpenFilter(true)} style={{ margin: 10 }}>
+        Фильтр
+      </Button>
       <Table
         columns={columns}
         dataSource={data}
         style={{ padding: 10 }}
         size="small"
+        pagination={false}
       />
-
+      <Pagination
+        current={pagination.offset + 1}
+        pageSize={pagination.limit}
+        total={countUsers}
+        showSizeChanger={false}
+        onChange={(current: number) => handleChangePagination(current)}
+        style={{ marginTop: 16, textAlign: "center", marginBottom: 15 }}
+      ></Pagination>
+      <Modal
+        title="Фильтровать пользователей по статусу блокировки"
+        open={isModalOpenFilter}
+        onOk={() => handleChangeBlockFilter(blockFilter)}
+        onCancel={handleCancel}
+      >
+        <Form>
+          <Form.Item>
+            <>
+              <Radio.Group
+                value={blockFilter}
+                onChange={(e: RadioChangeEvent) =>
+                  setBlockFilter(e.target.value)
+                }
+              >
+                <Radio value={undefined} key={"option1"}>
+                  Все пользователи
+                </Radio>
+                <Radio value={true} key={"option2"}>
+                  Заблокированные
+                </Radio>
+                <Radio value={false} key={"option3"}>
+                  Не заблокированные
+                </Radio>
+              </Radio.Group>
+            </>
+          </Form.Item>
+        </Form>
+      </Modal>
       <Modal
         title="Выберите роли"
-        open={isModalOpen}
+        open={isModalOpenRoles}
         onOk={() => handleSaveRoles(userId, userRoles)}
         onCancel={handleCancel}
       >
-        <Form onFinish={(values) => console.log(values)}>
+        <Form>
           <Form.Item>
             <Checkbox
               type="checkbox"

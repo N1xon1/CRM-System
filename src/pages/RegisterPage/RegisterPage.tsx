@@ -45,7 +45,7 @@ export default function RegisterPage() {
         marginRight: 30,
         marginLeft: 30,
         fontSize: 18,
-        backgroundColor: "white",
+        backgroundColor: "silver",
       }}
     >
       <Title level={1}>Регистрация прошла успешно!</Title>
@@ -67,9 +67,9 @@ export default function RegisterPage() {
           display: "flex",
           flexDirection: "column",
           maxWidth: 600,
-          backgroundColor: "white",
+          backgroundColor: "silver",
           margin: "auto",
-          // height:400
+          marginTop: 100,
         }}
         onFinish={handleRegister}
       >

@@ -17,7 +17,6 @@ import { tokenService } from "@/services/authToken";
 import { isAuthUser } from "@/store/slices/userSlice";
 import { store } from "@/store/store";
 import axios, { AxiosError } from "axios";
-import { data } from "react-router-dom";
 
 // Конфигурация API
 const configApi = axios.create({
@@ -303,6 +302,7 @@ configApi.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const refreshToken = localStorage.getItem("refToken");
+
 
     if (
       originalRequest.url?.endsWith("/auth/signup") ||
