@@ -14,11 +14,11 @@ function App() {
       <Route path="/" element={<Navigate to="/auth" replace />} />
       <Route path="/auth" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/management" element={<UserManagement/>}></Route>
       <Route path="/app" element={<LayoutPage />}>
         <Route index element={<TodoListPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="users" element={<UsersPage />}></Route>
+        <Route path="/management" element={<UserManagement />}></Route>
       </Route>
     </Routes>
   );
