@@ -231,6 +231,11 @@ export async function updateProfileUser(
   } catch (error) {
     const axiosError = error as AxiosError;
     console.error("Ошибка:", axiosError.message);
+    if (axiosError.response?.status === 400) {
+      throw new Error(
+        "При изменение данных профиля, надо менять почту и login всегда!"
+      );
+    }
     throw new AxiosError("Запрос не удался");
   }
 }
@@ -303,7 +308,6 @@ configApi.interceptors.response.use(
     const originalRequest = error.config;
     const refreshToken = localStorage.getItem("refToken");
 
-
     if (
       originalRequest.url?.endsWith("/auth/signup") ||
       originalRequest.url?.endsWith("/auth/signin") ||
@@ -345,11 +349,13 @@ configApi.interceptors.response.use(
         console.log("Пользоваетль не авторизован", error);
         store.dispatch(isAuthUser(false));
         tokenService.clear();
+        localStorage.removeItem('userFilters')
       }
     }
     if (!store.getState().user.isAuth) {
       window.location.href = "/auth";
       return Promise.reject(error);
     }
+    return Promise.reject(error);
   }
 );

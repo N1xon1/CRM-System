@@ -1,40 +1,55 @@
 import { getAdminUserProfile, updateProfileUser } from "@/api/api";
-import { UserRequest } from "@/models/admin";
+import { User, UserRequest } from "@/models/admin";
 import { LeftCircleOutlined } from "@ant-design/icons";
 import { Form, Input, Button, Flex } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function UserManagement() {
   const [form] = Form.useForm();
-  const [isActivBtn, setIsActivBtn] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [userData, setUserData] = useState<UserRequest>({});
+
   const userId = Number(localStorage.getItem("userId"));
+  useEffect(() => {
+    getUserData(userId);
+  }, [userId]);
   async function getUserData(id: number | null) {
     if (id === null) {
       form.resetFields();
       return;
     }
     try {
-      const userData = await getAdminUserProfile(id);
+      const data: User = await getAdminUserProfile(id);
+      setUserData({
+        username: data.username,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+      });
+
       form.setFieldsValue({
-        userName: userData.username,
-        email: userData.email,
-        phoneNumber: userData.phoneNumber,
+        username: data.username,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
       });
     } catch (error) {
       alert(error);
     }
   }
-  getUserData(userId);
 
   function handleEdit() {
-    setIsActivBtn(true);
     setIsEdit(true);
   }
-  async function handleSave(id: number, userData: UserRequest) {
+  async function handleSave(id: number, userRequest: UserRequest) {
     try {
-      await updateProfileUser(id, userData);
-      setIsActivBtn(false);
+      setUserData({
+        email: userRequest.email ?? userData.email,
+        phoneNumber: userRequest.phoneNumber ?? userData.phoneNumber,
+        username: userRequest.username ?? userData.username,
+      });
+      console.log(userData);
+      console.log(userRequest);
+      await updateProfileUser(id, userRequest);
+      setIsEdit(false);
     } catch (error) {
       alert(error);
     }
@@ -42,7 +57,22 @@ export default function UserManagement() {
   return (
     <Form
       form={form}
-      onFinish={(userData) => handleSave(userId, userData)}
+      onFinish={(userRequest: UserRequest) =>
+        handleSave(userId, {
+          email:
+            userRequest.email === userData.email
+              ? undefined
+              : userRequest.email,
+          phoneNumber:
+            userRequest.phoneNumber === userData.phoneNumber
+              ? undefined
+              : userRequest.phoneNumber,
+          username:
+            userRequest.username === userData.username
+              ? undefined
+              : userRequest.username,
+        })
+      }
       style={{
         width: "60%",
         margin: "auto",
@@ -64,7 +94,7 @@ export default function UserManagement() {
       </Button>
       <Form.Item
         label="User Name"
-        name="userName"
+        name="username"
         rules={[
           {
             required: true,
@@ -80,7 +110,7 @@ export default function UserManagement() {
         style={{ marginTop: 30 }}
       >
         <Input
-          name="userName"
+          name="username"
           disabled={!isEdit}
           style={{ color: "inherit", background: "inherit", opacity: 1 }}
         />
@@ -131,7 +161,7 @@ export default function UserManagement() {
         <Button
           htmlType="submit"
           style={{ backgroundColor: "#00ff6eff" }}
-          disabled={!isActivBtn}
+          disabled={!isEdit}
         >
           Сохранить
         </Button>

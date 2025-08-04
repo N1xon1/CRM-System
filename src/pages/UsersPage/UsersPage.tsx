@@ -6,6 +6,7 @@ import {
   updateRolesUser,
 } from "@/api/api";
 import { Roles, User, UserFilters } from "@/models/admin";
+import { tokenService } from "@/services/authToken";
 import {
   CaretDownOutlined,
   CaretUpOutlined,
@@ -28,7 +29,7 @@ import { useEffect, useState } from "react";
 
 export default function UsersPage() {
   const [data, setData] = useState<User[]>([]);
-  const [userFilters, setUserFilters] = useState<UserFilters>({ limit: 20 });
+  const [userFilters, setUserFilters] = useState<UserFilters>({});
   const [isModalOpenRoles, setIsModalOpenRoles] = useState<boolean>(false);
   const [isModalOpenFilter, setIsModalOpenFilter] = useState<boolean>(false);
   const [userRoles, setUserRoles] = useState<Roles[]>([]);
@@ -36,6 +37,7 @@ export default function UsersPage() {
   const [blockFilter, setBlockFilter] = useState<boolean | undefined>(
     undefined
   );
+  const [filtersReady, setFiltersReady] = useState<Boolean>(false);
   const [countUsers, setCountUsers] = useState<number>(0);
   const [pagination, setPagination] = useState<{
     limit: number;
@@ -46,6 +48,8 @@ export default function UsersPage() {
   });
 
   const { Search } = Input;
+
+  const dataFilters = localStorage.getItem("userFilters");
 
   const fetchData = async (userFilters: UserFilters) => {
     try {
@@ -65,13 +69,28 @@ export default function UsersPage() {
       phoneNumber: user.phoneNumber || "-",
     }));
 
+  const userFiltersF5: UserFilters | undefined = dataFilters
+    ? JSON.parse(dataFilters)
+    : undefined;
+
   useEffect(() => {
-    fetchData(userFilters);
+    if (Object.keys(userFilters).length === 0) {
+      const newFilter = { ...userFiltersF5, limit: 20 };
+      setUserFilters(newFilter);
+      setFiltersReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (filtersReady) {
+      fetchData(userFilters);
+    }
   }, [userFilters]);
 
   const handleEditProfile = (userData: User) => {
     localStorage.setItem("userId", String(userData.id));
     window.location.href = "/management";
+    localStorage.setItem("userFilters", JSON.stringify(userFilters));
   };
 
   const handleDelete = async (id: number) => {
