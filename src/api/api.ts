@@ -1,4 +1,10 @@
 import { TodoInfo, Todo, MetaResponse, TaskStatus } from "@/models/todo";
+import MetaResponseAdmin, {
+  User,
+  UserFilters,
+  UserRequest,
+  UserRolesRequest,
+} from "@/models/admin";
 import {
   UserRegistration,
   RefreshToken,
@@ -184,6 +190,106 @@ export async function logoutUser(): Promise<void> {
   }
 }
 
+// Админка
+
+// Получить всех пользователей
+export async function getUsers(
+  userFilters: UserFilters
+): Promise<MetaResponseAdmin<User>> {
+  try {
+    const res = await configApi.get(`/admin/users`, {
+      params: userFilters,
+    });
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Получить данные профиля пользователя
+export async function getAdminUserProfile(id: number): Promise<User> {
+  try {
+    const res = await configApi.get(`/admin/users/${id}`);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Обновить профиль пользователя
+export async function updateProfileUser(
+  id: number,
+  userData: UserRequest
+): Promise<User> {
+  try {
+    const res = await configApi.put(`/admin/users/${id}`, userData);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    if (axiosError.response?.status === 400) {
+      throw new Error(
+        "При изменение данных профиля, надо менять почту и login всегда!"
+      );
+    }
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Удалить пользователя
+export async function deleteUser(id: number) {
+  try {
+    const res = await configApi.delete(`/admin/users/${id}`);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+// Заблокировать пользователя
+export async function blockUser(id: number): Promise<User> {
+  try {
+    const res = await configApi.post(`/admin/users/${id}/block`);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Разблокировать пользователя
+export async function unblockUser(id: number): Promise<User> {
+  try {
+    const res = await configApi.post(`/admin/users/${id}/unblock`);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
+// Обновление прав пользователя
+export async function updateRolesUser(
+  id: number,
+  userRoles: UserRolesRequest
+): Promise<User> {
+  try {
+    const res = await configApi.post(`/admin/users/${id}/rights`, userRoles);
+    return res.data;
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error("Ошибка:", axiosError.message);
+    throw new AxiosError("Запрос не удался");
+  }
+}
+
 configApi.interceptors.request.use((config) => {
   if (!config.url?.endsWith("/auth/refresh")) {
     const token = tokenService.get();
@@ -238,18 +344,18 @@ configApi.interceptors.response.use(
         tokenService.set(res.accessToken);
         localStorage.setItem("refToken", res.refreshToken);
         store.dispatch(isAuthUser(true));
-        console.log(store.getState().user.isAuth);
         return configApi(originalRequest);
       } catch (error) {
         console.log("Пользоваетль не авторизован", error);
-        console.log(store.getState().user.isAuth);
         store.dispatch(isAuthUser(false));
         tokenService.clear();
+        localStorage.removeItem('userFilters')
       }
     }
     if (!store.getState().user.isAuth) {
       window.location.href = "/auth";
       return Promise.reject(error);
     }
+    return Promise.reject(error);
   }
 );

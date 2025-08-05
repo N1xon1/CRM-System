@@ -1,11 +1,7 @@
-/* *{
-  border: 2px red solid;
-} */
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  padding: 0;
   min-height: 100vh;
-  background-color: #1a1a1a;
+  width: 100vw;
+  display: block;
 }

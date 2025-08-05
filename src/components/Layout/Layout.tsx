@@ -9,10 +9,16 @@ export default function LayoutPage() {
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === "/app") {
-      setSelectedKeys(["todo"]);
-    } else if (path === "/app/profile") {
-      setSelectedKeys(["profile"]);
+    switch (path) {
+      case "/app":
+        setSelectedKeys(["todo"]);
+        break;
+      case "/app/profile":
+        setSelectedKeys(["profile"]);
+        break;
+      case "/app/users":
+        setSelectedKeys(["users"]);
+        break;
     }
   }, [location]);
   return (
@@ -31,11 +37,15 @@ export default function LayoutPage() {
               key: "profile",
               label: <Link to="profile">Личный кабинет</Link>,
             },
+            {
+              key: "users",
+              label: <Link to="users">Пользователи</Link>,
+            },
           ]}
         />
       </Sider>
       <Layout>
-        <Content style={{ background: "#f5f5f5", width: 550 }}>
+        <Content style={{ background: "#f5f5f5", width: "100%" }}>
           <Outlet />
         </Content>
       </Layout>

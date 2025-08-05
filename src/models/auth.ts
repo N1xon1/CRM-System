@@ -1,3 +1,5 @@
+import { Roles } from "./admin";
+
 export interface UserRegistration {
   login: string;
   userName: string;
@@ -21,8 +23,8 @@ export interface Profile {
   email: string;
   date: string;
   isBlocked: boolean;
-  // roles: Role[];
-  phonenumber: string;
+  roles: Roles[];
+  phoneNumber: string;
 }
 
 export interface ProfileRequest {
