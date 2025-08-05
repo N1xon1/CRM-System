@@ -69,13 +69,13 @@ export default function UsersPage() {
       phoneNumber: user.phoneNumber || "-",
     }));
 
-  const userFiltersF5: UserFilters | undefined = dataFilters
+  const userFiltersFromStorage: UserFilters | undefined = dataFilters
     ? JSON.parse(dataFilters)
     : undefined;
 
   useEffect(() => {
     if (Object.keys(userFilters).length === 0) {
-      const newFilter = { ...userFiltersF5, limit: 20 };
+      const newFilter = { ...userFiltersFromStorage, limit: 20 };
       setUserFilters(newFilter);
       setFiltersReady(true);
     }
@@ -267,8 +267,10 @@ export default function UsersPage() {
       title: (
         <Flex align="center" gap="small">
           <span>{title}</span>
+
           <Button size="small" onClick={() => handleSortChange(sortKey)}>
-            {userFilters.sortOrder === "asc" ? (
+            {userFilters.sortOrder === "asc" &&
+            userFilters.sortBy === sortKey ? (
               <CaretUpOutlined />
             ) : (
               <CaretDownOutlined />
